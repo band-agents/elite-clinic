@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elite Clinic — Type Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Manrope:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=Inter+Tight:wght@300;400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0E2A47;
+    --ink:#071B2F;
+    --gold:#C7A86E;
+    --gold-dim:#8E7647;
+    --cream:#F7F7F5;
+    --gray:#6B7890;
+    --line:rgba(199,168,110,.22);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:'Geist','Inter Tight',system-ui,sans-serif;
+    line-height:1.6;
+    padding:clamp(24px,5vw,72px) 16px 96px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  .head{margin-bottom:clamp(40px,6vw,80px);max-width:640px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:20px;font-weight:500;
+  }
+  .head h1{
+    font-family:'Instrument Serif',serif;font-weight:400;
+    font-size:clamp(32px,5.5vw,52px);line-height:1.1;letter-spacing:-.01em;
+    margin-bottom:16px;
+  }
+  .head p{color:var(--gray);font-size:15px;max-width:52ch}
+
+  .card{
+    background:var(--navy);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:10px;
+    padding:clamp(28px,4vw,56px);
+    margin-bottom:28px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;inset:0 auto 0 0;width:2px;background:var(--gold);
+  }
+  .tag{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding-bottom:22px;margin-bottom:34px;border-bottom:1px solid var(--line);
+  }
+  .tag .n{
+    font-family:'Geist',sans-serif;font-size:11px;letter-spacing:.2em;
+    color:var(--gold);font-weight:500;
+  }
+  .tag .name{font-size:19px;font-weight:500;letter-spacing:-.01em}
+  .tag .meta{font-size:12px;color:var(--gray);letter-spacing:.04em;margin-left:auto}
+
+  .hero{margin-bottom:34px}
+  .hero .kicker{
+    font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:18px;
+  }
+  .hero h2{
+    font-size:clamp(34px,6.2vw,62px);line-height:1.04;
+    letter-spacing:-.02em;font-weight:400;margin-bottom:14px;
+  }
+  .hero .sub{font-size:clamp(15px,2vw,18px);color:#B9C2CE;max-width:46ch;font-weight:300}
+
+  .body-copy{
+    display:grid;grid-template-columns:1fr 1fr;gap:34px;
+    padding-top:30px;border-top:1px solid rgba(255,255,255,.07);
+  }
+  .body-copy p{font-size:15px;color:#C6CDD7;font-weight:300;line-height:1.75}
+  .label{
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gray);margin-bottom:12px;
+  }
+  .ar{direction:rtl;text-align:right;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:15.5px;line-height:1.95}
+
+  .row{
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    margin-top:32px;padding-top:26px;border-top:1px solid rgba(255,255,255,.07);
+  }
+  .btn{
+    background:var(--gold);color:var(--ink);border:0;border-radius:6px;
+    padding:13px 26px;font-size:13.5px;font-weight:600;letter-spacing:.02em;
+    cursor:pointer;font-family:inherit;
+  }
+  .btn.ghost{background:transparent;color:var(--cream);border:1px solid rgba(255,255,255,.22);font-weight:400}
+  .price{margin-left:auto;text-align:right}
+  .price .v{font-size:26px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .price .u{font-size:11px;color:var(--gray);letter-spacing:.14em;text-transform:uppercase}
+
+  /* ---------- Direction A — Instrument Serif + Geist ---------- */
+  .A .hero h2, .A .head-serif{font-family:'Instrument Serif',serif;font-weight:400}
+  .A, .A .btn{font-family:'Geist','Inter Tight',sans-serif}
+  .A .hero h2{letter-spacing:-.015em}
+
+  /* ---------- Direction B — Cormorant Garamond + Manrope ---------- */
+  .B .hero h2{font-family:'Cormorant Garamond',serif;font-weight:300;letter-spacing:-.005em}
+  .B, .B .btn{font-family:'Manrope',sans-serif}
+  .B .hero h2{font-size:clamp(38px,7vw,70px)}
+
+  /* ---------- Direction C — Fraunces + Inter Tight ---------- */
+  .C .hero h2{
+    font-family:'Fraunces',serif;font-weight:400;
+    font-variation-settings:'SOFT' 30,'WONK' 1,'opsz' 100;
+    letter-spacing:-.022em;
+  }
+  .C, .C .btn{font-family:'Inter Tight',sans-serif}
+
+  .verdict{
+    margin-top:14px;font-size:13px;color:var(--gray);
+    padding-left:16px;border-left:2px solid var(--gold-dim);line-height:1.7;
+  }
+  .verdict b{color:var(--cream);font-weight:500}
+
+  @media (max-width:760px){
+    .body-copy{grid-template-columns:1fr;gap:26px}
+    .price{margin-left:0;text-align:left;width:100%}
+    .tag .meta{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="head">
+    <div class="eyebrow">Elite Clinic · Men's Health</div>
+    <h1>Three type directions</h1>
+    <p>Same palette, same layout, three voices. Read the body text as much as the headline — that's the part a patient actually sits with.</p>
+  </header>
+
+  <!-- A -->
+  <section class="card A">
+    <div class="tag">
+      <span class="n">A</span>
+      <span class="name">Instrument Serif + Geist</span>
+      <span class="meta">Fashion editorial · sharp · current</span>
+    </div>
+    <div class="hero">
+      <div class="kicker">More than treatment</div>
+      <h2>Your Health.<br>Our Priority.</h2>
+      <div class="sub">Expert care, complete privacy, and no waiting — by appointment only in Sheikh Zayed.</div>
+    </div>
+    <div class="body-copy">
+      <div>
+        <div class="label">Body — English</div>
+        <p>Every consultation takes place in a private room with a dedicated entrance. Your file is visible only to your treating physician, and nothing in our messages to you names the service you booked.</p>
+      </div>
+      <div>
+        <div class="label">Body — Arabic</div>
+        <p class="ar">كل استشارة تتم في غرفة خاصة بمدخل مستقل. ملفك الطبي لا يطّلع عليه سوى طبيبك المعالج، ولا تحمل رسائلنا إليك اسم الخدمة التي حجزتها.</p>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn">Book your appointment</button>
+      <button class="btn ghost">Ask privately</button>
+      <div class="price"><div class="v">2,500 EGP</div><div class="u">Consultation</div></div>
+    </div>
+    <p class="verdict"><b>Reads as:</b> a private members' club. The tightest, most modern of the three — the serif is high-contrast and a little sensual, Geist keeps the UI cold and precise. Best if you want the site to feel like a fashion house that happens to be a clinic.</p>
+  </section>
+
+  <!-- B -->
+  <section class="card B">
+    <div class="tag">
+      <span class="n">B</span>
+      <span class="name">Cormorant Garamond + Manrope</span>
+      <span class="meta">Classic luxury · calm · older-skewing</span>
+    </div>
+    <div class="hero">
+      <div class="kicker">More than treatment</div>
+      <h2>Your Health.<br>Our Priority.</h2>
+      <div class="sub">Expert care, complete privacy, and no waiting — by appointment only in Sheikh Zayed.</div>
+    </div>
+    <div class="body-copy">
+      <div>
+        <div class="label">Body — English</div>
+        <p>Every consultation takes place in a private room with a dedicated entrance. Your file is visible only to your treating physician, and nothing in our messages to you names the service you booked.</p>
+      </div>
+      <div>
+        <div class="label">Body — Arabic</div>
+        <p class="ar">كل استشارة تتم في غرفة خاصة بمدخل مستقل. ملفك الطبي لا يطّلع عليه سوى طبيبك المعالج، ولا تحمل رسائلنا إليك اسم الخدمة التي حجزتها.</p>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn">Book your appointment</button>
+      <button class="btn ghost">Ask privately</button>
+      <div class="price"><div class="v">2,500 EGP</div><div class="u">Consultation</div></div>
+    </div>
+    <p class="verdict"><b>Reads as:</b> a Swiss private hospital or a five-star hotel. Softest and most reassuring — Cormorant is thin and graceful, Manrope is round and very easy on the eye at small sizes. Safest choice for men 45+ and the one that ages slowest.</p>
+  </section>
+
+  <!-- C -->
+  <section class="card C">
+    <div class="tag">
+      <span class="n">C</span>
+      <span class="name">Fraunces + Inter Tight</span>
+      <span class="meta">Warm editorial · confident · distinctive</span>
+    </div>
+    <div class="hero">
+      <div class="kicker">More than treatment</div>
+      <h2>Your Health.<br>Our Priority.</h2>
+      <div class="sub">Expert care, complete privacy, and no waiting — by appointment only in Sheikh Zayed.</div>
+    </div>
+    <div class="body-copy">
+      <div>
+        <div class="label">Body — English</div>
+        <p>Every consultation takes place in a private room with a dedicated entrance. Your file is visible only to your treating physician, and nothing in our messages to you names the service you booked.</p>
+      </div>
+      <div>
+        <div class="label">Body — Arabic</div>
+        <p class="ar">كل استشارة تتم في غرفة خاصة بمدخل مستقل. ملفك الطبي لا يطّلع عليه سوى طبيبك المعالج، ولا تحمل رسائلنا إليك اسم الخدمة التي حجزتها.</p>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn">Book your appointment</button>
+      <button class="btn ghost">Ask privately</button>
+      <div class="price"><div class="v">2,500 EGP</div><div class="u">Consultation</div></div>
+    </div>
+    <p class="verdict"><b>Reads as:</b> a modern wellness brand with money behind it. Fraunces has soft, slightly wonky curves that feel human rather than corporate — warmest of the three, and the most memorable. Slightly riskier; it has a personality you either want or don't.</p>
+  </section>
+
+  <p class="verdict" style="margin-top:34px;max-width:70ch">
+    <b>My pick: A.</b> It matches "sexy and sleek" most literally, the body text in Geist is genuinely comfortable to read for long articles and lab results, and it stays elegant in Arabic once paired with IBM Plex Sans Arabic. B is the safer commercial choice if the clinic's owner is conservative.
+  </p>
+
+</div>
+</body>
+</html>
