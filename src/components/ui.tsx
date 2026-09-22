@@ -77,7 +77,7 @@ export function RevealItem({
 
 /* ── Buttons ─────────────────────────────────────────────── */
 
-type ButtonTone = "primary" | "ghost" | "outline" | "light" | "coral" | "mint";
+type ButtonTone = "primary" | "ghost" | "outline" | "light" | "white" | "coral" | "mint";
 type ButtonSize = "sm" | "md" | "lg";
 
 const TONE: Record<ButtonTone, string> = {
@@ -87,6 +87,9 @@ const TONE: Record<ButtonTone, string> = {
   outline: "border border-brand/25 text-brand hover:bg-brand-wash",
   ghost: "text-ink-soft hover:text-brand hover:bg-brand-wash/60",
   light: "bg-white/12 text-white border border-white/25 hover:bg-white/20 backdrop-blur-sm",
+  /* The primary action ON a navy panel. Using `primary` there puts navy on
+     navy, which reads as disabled — the opposite of what a hero CTA wants. */
+  white: "bg-white text-brand hover:bg-white/90 shadow-[0_10px_30px_-14px] shadow-black/50",
 };
 
 const SIZE: Record<ButtonSize, string> = {

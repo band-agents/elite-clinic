@@ -106,7 +106,7 @@ export function Privacy() {
               to the retention period Egyptian medical practice requires.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <ButtonLink href="/contact" tone="light">Ask us about your data</ButtonLink>
+              <ButtonLink href="/contact" tone="white">Ask us about your data</ButtonLink>
               <ButtonLink href="/book" tone="light">Book an appointment</ButtonLink>
             </div>
           </div>

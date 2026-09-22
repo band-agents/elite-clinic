@@ -110,7 +110,7 @@ export function ArticlePage() {
             <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/65">
               Forty minutes with {BRAND.doctor}, in private, with no obligation to go further.
             </p>
-            <ButtonLink href="/book" tone="light" size="lg" className="mt-8">
+            <ButtonLink href="/book" tone="white" size="lg" className="mt-8">
               <CalendarCheck size={17} /> Book a consultation
             </ButtonLink>
           </div>

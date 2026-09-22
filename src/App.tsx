@@ -9,12 +9,13 @@
 import { useEffect } from "react";
 import { Route, Switch, useLocation } from "wouter";
 
-import { Nav } from "@/components/Nav";
+import { DARK_HERO, Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Home } from "@/pages/Home";
 import { Services } from "@/pages/Services";
 import { ServiceDetail } from "@/pages/ServiceDetail";
 import { Doctor } from "@/pages/Doctor";
+import { International } from "@/pages/International";
 import { Journal } from "@/pages/Journal";
 import { ArticlePage } from "@/pages/Article";
 import { Contact } from "@/pages/Contact";
@@ -36,17 +37,21 @@ function ScrollToTop() {
 export function App() {
   const [location] = useLocation();
   const bare = location.startsWith("/portal");
+  /* A full-bleed hero runs under the fixed header; padding it down would
+     leave a band of surface above the hero. */
+  const fullBleed = DARK_HERO.includes(location);
 
   return (
     <>
       <ScrollToTop />
       {!bare && <Nav />}
-      <main className={bare ? "" : "pt-[72px]"}>
+      <main className={bare || fullBleed ? "" : "pt-[72px]"}>
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/services" component={Services} />
           <Route path="/services/:id" component={ServiceDetail} />
           <Route path="/doctor" component={Doctor} />
+          <Route path="/international" component={International} />
           <Route path="/journal" component={Journal} />
           <Route path="/journal/:slug" component={ArticlePage} />
           <Route path="/contact" component={Contact} />

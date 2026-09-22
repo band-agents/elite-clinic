@@ -13,7 +13,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
-  Activity, Beaker, HeartPulse, Microscope, Scan, ShieldCheck, Stethoscope, Waves,
+  Activity, Beaker, HeartPulse, Microscope, Plane, Scan, ShieldCheck, Stethoscope, Waves,
 } from "lucide-react";
 
 /* ── Services ────────────────────────────────────────────── */
@@ -199,6 +199,7 @@ export const VISIT_TYPES: VisitType[] = [
   { id: "follow-up", label: "Follow-up", hint: "Reviewing results or ongoing treatment", icon: Activity, needsService: false },
   { id: "imaging", label: "Scan or ultrasound", hint: "Doppler, scrotal, urinary tract", icon: Scan, needsService: false },
   { id: "labs", label: "Blood & lab tests", hint: "Hormone panels, semen analysis, PSA", icon: Beaker, needsService: false },
+  { id: "abroad", label: "Travelling from abroad", hint: "Elite Passage — flights, visa, hotel", icon: Plane, needsService: true },
 ];
 
 export const visitTypeById = (id: string) => VISIT_TYPES.find((v) => v.id === id);

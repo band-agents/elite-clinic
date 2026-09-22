@@ -8,12 +8,11 @@
    it replaces, so `brand-lift` carries the jobs that need a lighter tone
    (focus rings, links on dark) rather than being a simple tint of `brand`.
 
-   Type is the one deliberate departure: Fraunces gives way to Instrument
-   Serif for display — higher contrast, tighter, more editorial — while the
-   body stays on IBM Plex Sans Arabic, which is comfortable at 15px and keeps
-   the Arabic build a font-swap rather than a redesign. */
+   Type is the hospital's too: Fraunces for display, IBM Plex Sans Arabic for
+   body and UI. Plex is comfortable at 15px and keeps an Arabic build a
+   font-swap rather than a redesign. */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -39,7 +38,7 @@
 
   /* ── Type ───────────────────────────────────────────────── */
   --font-sans: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Instrument Serif", "IBM Plex Sans Arabic", Georgia, serif;
+  --font-display: "Fraunces", "IBM Plex Sans Arabic", Georgia, serif;
 
   /* ── Motion ─────────────────────────────────────────────── */
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
@@ -65,14 +64,11 @@
     overflow-x: hidden;
   }
 
-  /* Instrument Serif ships one weight, so display hierarchy comes from size
-     and tracking rather than weight. It also runs small for its point size —
-     hence the slightly looser line-height than Fraunces needed. */
   h1, h2, h3 {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.018em;
-    line-height: 1.06;
+    font-weight: 500;
+    letter-spacing: -0.022em;
+    line-height: 1.08;
     text-wrap: balance;
   }
 
@@ -157,6 +153,75 @@
   .u-discreet:hover, .u-discreet:focus-visible, .u-discreet[data-shown="true"] {
     filter: none;
     user-select: auto;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+
+  /* The hero's base. Three overlapping radial washes on a navy field, drifting
+     slowly — this is what the hospital got from a rendered video, done in CSS
+     so there is no 6MB file to ship and nothing to 404. */
+  .u-hero-field {
+    background:
+      radial-gradient(60% 70% at 18% 22%, hsl(208 58% 26%) 0%, transparent 62%),
+      radial-gradient(52% 60% at 85% 18%, hsl(200 52% 24%) 0%, transparent 60%),
+      radial-gradient(70% 80% at 62% 96%, hsl(168 40% 20%) 0%, transparent 58%),
+      linear-gradient(155deg, hsl(211 70% 14%) 0%, hsl(211 76% 9%) 60%, hsl(211 68% 13%) 100%);
+    background-size: 160% 160%, 150% 150%, 170% 170%, 100% 100%;
+    animation: hero-drift 34s var(--ease-in-out-soft) infinite alternate;
+  }
+  @keyframes hero-drift {
+    0%   { background-position: 0% 0%, 100% 0%, 50% 100%, 0 0; }
+    100% { background-position: 18% 14%, 78% 16%, 38% 82%, 0 0; }
+  }
+
+  /* Legibility scrim over the hero field. The headline has to survive
+     whatever the gradient is doing underneath it. */
+  .u-scrim {
+    background: linear-gradient(
+      to bottom,
+      hsl(211 74% 7% / 0.52) 0%,
+      hsl(211 74% 7% / 0.24) 36%,
+      hsl(211 74% 7% / 0.80) 100%
+    );
+  }
+
+  /* Film grain. Navy over a large area goes plasticky without it. An inline
+     SVG turbulence keeps it to a few hundred bytes and no image request. */
+  .u-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  }
+
+  /* ── Rails ──────────────────────────────────────────────── */
+
+  /* Horizontal scrollers — the service rail on mobile, the day picker in
+     booking. Hides the bar without hiding the overflow. */
+  .u-rail {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .u-rail::-webkit-scrollbar { display: none; }
+
+  /* Fades the right edge of a rail so a cut-off card reads as "more this
+     way" rather than as a layout bug. */
+  .u-rail-fade {
+    mask-image: linear-gradient(to right, black 88%, transparent 100%);
+  }
+
+  /* A marquee that pauses on hover. Used for the international programme's
+     country strip. The track is duplicated in the markup, so translating by
+     -50% lands exactly on the seam. */
+  .u-marquee { display: flex; width: max-content; animation: marquee 38s linear infinite; }
+  .u-marquee:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
   }
 }
 

@@ -5,8 +5,11 @@
  * it slid in from `y: -70`, and an interrupted tween left it stranded off
  * screen with no navigation at all. Nothing load-bearing gets animated in.
  *
- * It does change appearance on scroll — transparent over the hero, solid
- * once past it — but that is a CSS transition on an element already in place.
+ * It has two skins. Over a dark hero it is transparent with white type; once
+ * scrolled past it — or on any page whose top is light — it goes solid with
+ * ink type. `DARK_HERO` is the list of routes that start dark; getting a
+ * route wrong here costs the whole navigation, because white links on a white
+ * page are invisible rather than merely ugly.
  */
 
 import { useEffect, useState } from "react";
@@ -21,10 +24,20 @@ import { Wordmark } from "@/components/Logo";
 
 const LINKS = [
   { href: "/services", label: "Services" },
+  { href: "/international", label: "International" },
   { href: "/doctor", label: "Dr. Osama" },
   { href: "/journal", label: "Journal" },
   { href: "/contact", label: "Contact" },
 ] as const;
+
+/**
+ * Routes whose first screenful is a full-bleed dark hero.
+ *
+ * Shared with App, which must NOT pad the main element on these routes — the
+ * hero is meant to run under the fixed header, and 72px of surface above it
+ * reads as a broken layout.
+ */
+export const DARK_HERO = ["/", "/international"];
 
 export function Nav() {
   const [location] = useLocation();
@@ -52,18 +65,21 @@ export function Nav() {
     return () => { document.body.style.overflow = prev; };
   }, [open]);
 
+  const solid = scrolled || open;
+  const light = DARK_HERO.includes(location) && !solid;
+
   return (
     <header
       className={cx(
         "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
-        scrolled || open
-          ? "bg-surface/85 backdrop-blur-xl border-b border-line"
-          : "bg-transparent border-b border-transparent",
+        solid
+          ? "border-b border-line bg-surface/85 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent",
       )}
     >
       <div className="u-wrap flex h-[72px] items-center gap-6">
         <Link href="/" className="shrink-0" aria-label={`${BRAND.name} — home`}>
-          <Wordmark />
+          <Wordmark tone={light ? "light" : "brand"} />
         </Link>
 
         <nav className="ml-auto hidden items-center gap-1 lg:flex" aria-label="Main">
@@ -75,14 +91,16 @@ export function Nav() {
                 href={l.href}
                 className={cx(
                   "relative rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
-                  active ? "text-brand" : "text-ink-soft hover:text-brand",
+                  light
+                    ? active ? "text-white" : "text-white/65 hover:text-white"
+                    : active ? "text-brand" : "text-ink-soft hover:text-brand",
                 )}
               >
                 {l.label}
                 {active && (
                   <motion.span
                     layoutId="nav-active"
-                    className="absolute inset-x-3 -bottom-0.5 h-px bg-brand"
+                    className={cx("absolute inset-x-3 -bottom-0.5 h-px", light ? "bg-white" : "bg-brand")}
                     transition={springy}
                   />
                 )}
@@ -96,12 +114,17 @@ export function Nav() {
             href={BRAND.whatsappHref}
             target="_blank"
             rel="noreferrer"
-            className="hidden h-10 items-center gap-2 rounded-full px-4 text-[13.5px]
-                       font-medium text-ink-soft transition-colors hover:bg-mint-wash hover:text-mint md:inline-flex"
+            className={cx(
+              "hidden h-10 items-center gap-2 rounded-full px-4 text-[13.5px] font-medium transition-colors md:inline-flex",
+              light
+                ? "text-white/70 hover:bg-white/10 hover:text-white"
+                : "text-ink-soft hover:bg-mint-wash hover:text-mint",
+            )}
           >
             <MessageCircle size={15} /> Ask privately
           </a>
-          <ButtonLink href="/book" size="sm" className="h-10 px-5">
+
+          <ButtonLink href="/book" tone={light ? "light" : "primary"} size="sm" className="h-10 px-5">
             <CalendarCheck size={15} /> Book
           </ButtonLink>
 
@@ -110,8 +133,12 @@ export function Nav() {
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="grid h-10 w-10 place-items-center rounded-full border border-line
-                       bg-white text-ink transition-colors hover:border-brand/40 lg:hidden"
+            className={cx(
+              "grid h-10 w-10 place-items-center rounded-full border transition-colors lg:hidden",
+              light
+                ? "border-white/25 bg-white/10 text-white backdrop-blur-sm"
+                : "border-line bg-white text-ink hover:border-brand/40",
+            )}
           >
             {open ? <X size={17} /> : <Menu size={17} />}
           </button>

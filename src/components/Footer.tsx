@@ -52,6 +52,7 @@ export function Footer() {
             {[
               { href: "/doctor", label: "Dr. Osama Ghattas" },
               { href: "/services", label: "All services" },
+              { href: "/international", label: "International patients" },
               { href: "/journal", label: "Journal" },
               { href: "/contact", label: "Contact & directions" },
               { href: "/book", label: "Book an appointment" },
