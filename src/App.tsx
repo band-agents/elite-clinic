@@ -7,7 +7,7 @@
  */
 
 import { useEffect } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Router, Switch, useLocation } from "wouter";
 
 import { DARK_HERO, Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -34,7 +34,27 @@ function ScrollToTop() {
   return null;
 }
 
+/**
+ * The path the app is mounted under, with no trailing slash.
+ *
+ * "" on its own domain, "/elite-clinic" on GitHub Pages. It has to be handed
+ * to wouter's Router, or every route is compared against a pathname that
+ * still carries the sub-path and nothing but the 404 ever matches.
+ */
+const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "");
+
 export function App() {
+  return (
+    <Router base={BASE}>
+      <Shell />
+    </Router>
+  );
+}
+
+/* Inside the Router, so `useLocation` returns paths relative to the base.
+   Reading it in App — outside the provider — would give the raw pathname and
+   both checks below would silently stop matching under a sub-path. */
+function Shell() {
   const [location] = useLocation();
   const bare = location.startsWith("/portal");
   /* A full-bleed hero runs under the fixed header; padding it down would

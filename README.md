@@ -54,6 +54,31 @@ npm run typecheck   # types only
 
 ### Deploying
 
+**Live on GitHub Pages:**
+
+- Website — <https://band-agents.github.io/elite-clinic/>
+- Patient app — <https://band-agents.github.io/elite-clinic/prototype/elite-clinic-patient-app.html>
+- Clinic app — <https://band-agents.github.io/elite-clinic/prototype/elite-clinic-app.html>
+
+```bash
+npm run deploy:pages
+```
+
+That builds with `VITE_BASE=/elite-clinic/`, writes a `404.html` copy of the
+shell so client-side routes survive a direct hit, and force-pushes `dist` to
+the `gh-pages` branch.
+
+**Do not set `VITE_BASE` on a Git Bash command line.** MSYS rewrites anything
+shaped like a Unix path, so `/elite-clinic/` becomes
+`/Program Files/Git/elite-clinic/` and every asset URL points into nowhere —
+the page loads blank with no error. The deploy script sets it in-process
+instead. If a change does not appear, Pages may not have rebuilt:
+`gh api -X POST repos/band-agents/elite-clinic/pages/builds`.
+
+---
+
+### Vercel
+
 `vercel.json` rewrites everything to `index.html` so client-side routes survive
 a direct hit or a refresh, with `/prototype/*` excluded so the static file is
 served as itself rather than as the SPA shell.
