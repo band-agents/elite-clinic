@@ -133,15 +133,14 @@ function Hero() {
 
         {/* Contents strip. */}
         <div className="mt-16 border-t border-white/12 lg:mt-20">
-          <ul className="grid divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x lg:divide-white/10">
-            {CONTENTS.map((c, i) => (
+          {/* The trailing arrow sits at `ml-auto`, so without a column gap it
+              lands hard against the next cell's index number. */}
+          <ul className="grid gap-x-10 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
+            {CONTENTS.map((c) => (
               <li key={c.n}>
                 <Link
                   href={c.href}
-                  className={cx(
-                    "group flex items-baseline gap-4 py-6 transition-colors lg:px-7",
-                    i === 0 && "lg:pl-0",
-                  )}
+                  className="group flex items-baseline gap-4 py-6 transition-colors"
                 >
                   <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-mint">
                     {c.n}

@@ -16,7 +16,7 @@
  * a piece of content reaches the screen.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion, useInView, useMotionValue, useReducedMotion, useScroll,
   useSpring, useTransform, type Variants,
@@ -85,17 +85,23 @@ export function SplitText({
       }}
     >
       {words.map((word, i) => (
-        <span
-          key={`${word}-${i}`}
-          className="inline-block overflow-hidden pb-[0.09em] pr-[0.22em] align-bottom"
-        >
-          <motion.span
-            className="inline-block"
-            variants={reduced ? wordFade : wordUp}
-          >
-            {word}
-          </motion.span>
-        </span>
+        /* The space between wrappers is a real text node, not padding.
+           Spacing the words with `pr` alone renders correctly but leaves the
+           heading's textContent as "Men'shealth,handledprivately." — which is
+           what a screen reader announces, what a copy-paste produces, and
+           what a crawler indexes. The padding that remains is only there to
+           keep the clip box off overhanging glyphs. */
+        <Fragment key={`${word}-${i}`}>
+          <span className="inline-block overflow-hidden pb-[0.09em] pr-[0.04em] align-bottom">
+            <motion.span
+              className="inline-block"
+              variants={reduced ? wordFade : wordUp}
+            >
+              {word}
+            </motion.span>
+          </span>
+          {i < words.length - 1 ? " " : null}
+        </Fragment>
       ))}
     </Tag>
   );

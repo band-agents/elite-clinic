@@ -12,10 +12,11 @@ every name, price, credential and medical result in the repo is invented.
 
 | | |
 |---|---|
-| **Website** | 9 pages — home, services, service detail, the doctor, journal, article, contact, privacy, 404 |
+| **Website** | 10 pages — home, services, service detail, the doctor, international, journal, article, contact, privacy, 404 |
+| **Elite Passage** | The international patients programme: a ten-step journey, three tiers, and an enquiry form that accepts a foreign number |
 | **Booking** | 4-step flow with deep links, deterministic slot generation, Egyptian phone validation |
 | **Patient portal** | Sign-in, dashboard, appointments, results & documents, lab tables with reference ranges, medical history, medication, invoices, settings |
-| **Clinic app** | 19-screen interactive HTML prototype of the clinic-side mobile app — `prototype/elite-clinic-app.html` |
+| **Clinic app** | 19-screen interactive HTML prototype of the clinic-side mobile app — `public/prototype/elite-clinic-app.html` |
 
 ---
 
@@ -31,15 +32,28 @@ Dev server on **http://localhost:5195**.
 - Website — `/`
 - Booking — `/book` (or `/book?service=andrology` to deep-link a service)
 - Patient portal — `/portal` (any phone number and any six digits sign you in)
+- International programme — `/international`
 - Clinic app prototype — `/prototype/elite-clinic-app.html`
 
-The prototype is a single self-contained HTML file. It also opens directly from
-disk with no server — that is the copy to send a client.
+The prototype lives in `public/`, so Vite copies it into `dist` and it ships
+with the site at that URL. It is a single self-contained HTML file and also
+opens directly from disk with no server — that is the copy to send a client.
 
 ```bash
 npm run build       # typecheck, then production build
 npm run typecheck   # types only
 ```
+
+### Deploying
+
+`vercel.json` rewrites everything to `index.html` so client-side routes survive
+a direct hit or a refresh, with `/prototype/*` excluded so the static file is
+served as itself rather than as the SPA shell.
+
+It also sets `X-Robots-Tag: noindex, nofollow` on every response, mirrored by a
+meta tag in `index.html`. That stays until the clinic signs off the content:
+the site names a real doctor and every credential, price and review in it is
+invented.
 
 ---
 
@@ -55,13 +69,30 @@ Navy is considerably darker than the blue it replaces. `--color-brand-lift`
 therefore carries the jobs that need a lighter tone — focus rings, links on
 dark panels — rather than being a simple tint of `--color-brand`.
 
-**Type** is the one deliberate departure. Fraunces gives way to **Instrument
-Serif** for display: higher contrast, tighter, more editorial. Body and UI stay
-on **IBM Plex Sans Arabic**, which is comfortable at 15px and keeps an Arabic
-build a font swap rather than a redesign. Swapping the display face is a
-one-line change in `src/index.css`.
+**Type is the hospital's too** — **Fraunces** for display, **IBM Plex Sans
+Arabic** for body and UI. Plex is comfortable at 15px and keeps an Arabic build
+a font swap rather than a redesign.
 
 All tokens live in `src/index.css` under `@theme`.
+
+### The identity is editorial, not clinical
+
+What the two sites do **not** share is the decoration. A general hospital earns
+trust by looking like a hospital — heart traces, pulse rings, the medical
+cross. A private men's clinic does not: the men this place is for are avoiding
+anything that looks like a hospital.
+
+So there is no ECG, no vitals, no floating stethoscopes. The vocabulary in
+`src/components/editorial.tsx` is magazine furniture instead — `SplitText`
+(masked words that rise), `RuleDraw` (hairlines that draw themselves in),
+`IndexNum` (oversized numerals in the margin), `Kicker` (wide-tracked small
+caps on a rule), `Drift` (slow scroll parallax) and `WordMarquee`. Plus a
+contents strip under the hero and an offset, framed portrait.
+
+The hero's atmosphere is `.u-hero-field` — three drifting radial washes plus
+grain, in CSS. The hospital rendered an mp4 with Remotion; that is a 6MB
+asset, a render step, and a path that 404s the moment the site is not served
+from `/`.
 
 ---
 
@@ -86,8 +117,24 @@ is commented at the site of the fix:
   which rejected every number written the way the field's own placeholder asks
   for it.
 
+Two more, paid for in this build:
+
+- **`SplitText` triggers on the heading, never on the word.** A masked word
+  starts translated 118% down inside an `overflow: hidden` wrapper, so it has
+  no visible area at all — put `whileInView` on the word and
+  IntersectionObserver reports it permanently out of view, the reveal never
+  fires, and the headline stays blank forever. It ate the hero once.
+
+- **The words are separated by a real space, not by padding.** Spacing them
+  with `pr` alone renders correctly but leaves the heading's textContent as
+  `Men'shealth,handledprivately.` — which is what a screen reader announces,
+  what a copy-paste produces, and what a crawler indexes.
+
 Also: `wouter` v3 renders its own `<a>`, so a link wrapping one needs
-`<Link asChild>` or you get nested anchors.
+`<Link asChild>` or you get nested anchors. And the header's two skins are
+driven by `DARK_HERO` in `Nav.tsx`, shared with `App.tsx` — a route listed
+there gets white nav type and no top padding, so getting it wrong costs either
+the navigation or the layout.
 
 ---
 
