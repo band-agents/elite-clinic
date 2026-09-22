@@ -224,6 +224,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .drawer nav button:active{background:rgba(255,255,255,.12)}
 .drawer nav .sep{margin:14px 12px 8px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
 .drawer .out{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px;border-radius:99px;border:1px solid rgba(255,255,255,.22);font-size:14px;font-weight:600;color:#fff}
+.drawer .note{margin-top:14px;text-align:center;font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+.drawer .dsc{display:flex;align-items:center;gap:13px;width:100%;padding:13px 12px;border-radius:15px;border-top:1px solid rgba(255,255,255,.14);margin-top:8px;color:rgba(255,255,255,.85)}
+.drawer .dsc .ts{font-size:11.5px}
+.sw{width:44px;height:26px;border-radius:99px;background:rgba(255,255,255,.22);position:relative;flex:none;transition:background .22s}
+.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .22s var(--ease)}
+.sw.on{background:var(--mint)}
+.sw.on i{left:21px}
 
 /* ── Sheet ───────────────────────────────────────────────── */
 .sheet{
@@ -414,9 +421,11 @@ textarea.ctl{min-height:92px;align-items:flex-start;resize:none;line-height:1.55
 .empty{text-align:center;padding:48px 24px}
 .empty .ic{width:56px;height:56px;border-radius:19px;background:var(--navy-wash);color:var(--navy);display:grid;place-items:center;margin:0 auto 15px}
 
+/* min-height, not height: the summary card grows with the booking, and a
+   fixed 100% pushed the last rows behind the sticky Done button. */
 .succ{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;height:100%;padding:0 30px;
+  text-align:center;min-height:100%;padding:0 30px;
 }
 .succ .ring{
   width:96px;height:96px;border-radius:50%;background:var(--mint);color:#fff;
@@ -432,9 +441,56 @@ svg.i.sm{width:15px;height:15px}
 svg.i.lg{width:24px;height:24px}
 svg.i.xl{width:40px;height:40px;stroke-width:1.4}
 
+/* Narrow desktop / tablet: stack the note above the device, keep the frame. */
 @media(max-width:900px){
   body{flex-direction:column;padding:28px 16px}
   .aside{max-width:var(--w)}
+}
+
+/* An actual phone.
+   No device frame here — a phone drawn inside a phone is absurd, and the
+   bezel plus the fake status bar and home indicator cost the app a third of
+   a small screen. The app simply becomes the page: the real status bar, the
+   real home indicator and the real safe areas do the work the mock chrome
+   was doing. */
+@media(max-width:760px){
+  body{display:block;padding:0;background:var(--surface);min-height:100svh}
+  .aside{display:none}
+
+  .device{
+    width:100%;height:100svh;padding:0;border-radius:0;
+    background:none;box-shadow:none;
+  }
+  .device::before,.device::after{display:none}
+  .viewport{border-radius:0}
+  .island,.status,.home-bar{display:none}
+
+  .nav{padding-top:calc(env(safe-area-inset-top, 0px) + 16px)}
+  .drawer{
+    width:86%;
+    padding-top:calc(env(safe-area-inset-top, 0px) + 22px);
+    padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+  }
+  .tabs{
+    height:calc(70px + env(safe-area-inset-bottom, 0px));
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  .body.with-tabs{padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px))}
+  .body.with-cta{padding-bottom:calc(106px + env(safe-area-inset-bottom, 0px))}
+  .cta-bar{padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom, 0px))}
+  .sheet{padding-bottom:env(safe-area-inset-bottom, 0px)}
+
+  /* Tighten the menu so all nine destinations fit without scrolling on a
+     short phone — a nav you have to scroll to find Settings in reads as
+     half-finished. */
+  .drawer .me{padding-bottom:13px}
+  .drawer nav{padding-top:6px}
+  .drawer nav button{padding:9px 12px}
+  .drawer nav .sep{margin:9px 12px 4px}
+  .drawer .dsc{padding:10px 12px;margin-top:6px}
+  .drawer .out{margin-top:8px;padding:12px}
+  .drawer .note{margin-top:10px}
 }
 </style>
 </head>
@@ -535,11 +591,14 @@ svg.i.xl{width:40px;height:40px;stroke-width:1.4}
 const ic  = (n, c="i")   => `<svg class="${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const money = n => n.toLocaleString("en-US");
 
+/* Icon names here are BARE — `ic()` adds the `i-` prefix itself. Writing
+   "i-home" here produced href="#i-i-home", which matches no symbol, so every
+   tab and drawer icon silently rendered as nothing. */
 const TABS = [
-  { id:"today",    label:"Today",    icon:"i-home"  },
-  { id:"bookings", label:"Bookings", icon:"i-cal", badge:2 },
-  { id:"patients", label:"Patients", icon:"i-users" },
-  { id:"results",  label:"Results",  icon:"i-file", badge:1 },
+  { id:"today",    label:"Today",    icon:"home"  },
+  { id:"bookings", label:"Bookings", icon:"cal", badge:2 },
+  { id:"patients", label:"Patients", icon:"users" },
+  { id:"results",  label:"Results",  icon:"file", badge:1 },
 ];
 
 /* ── Fixtures ───────────────────────────────────────────── */
@@ -651,7 +710,15 @@ const tabbar = active => `
       <span>${t.label}</span>
     </button>`).join("")}</nav>`;
 
-const blur = txt => `<span class="blur" data-reveal>${txt}</span>`;
+/**
+ * Discreet mode — the clinic's real feature, but OFF by default here.
+ *
+ * On by default it reads as a rendering fault to anyone seeing the prototype
+ * cold: half the screen is grey smudge and nothing explains why. The toggle
+ * lives in the menu so it can be demonstrated deliberately.
+ */
+let discreet = false;
+const blur = txt => discreet ? `<span class="blur" data-reveal>${txt}</span>` : txt;
 
 /* ── Screens ────────────────────────────────────────────── */
 
@@ -1338,7 +1405,7 @@ function bookingWizard(){
     const svc = SERVICES.find(x=>x.id===draft.service);
     const day = DAYS.find(d=>d.iso===draft.date);
     return `
-      <div class="body" style="padding-top:58px">
+      <div class="body with-cta" style="padding-top:34px">
         <div class="succ">
           <span class="ring">${ic("check","i xl")}</span>
           <h2>Booking confirmed</h2>
@@ -1484,15 +1551,15 @@ function wizConfirm(){
 
 const DRAWER = [
   { sep:"Clinic" },
-  { id:"schedule", icon:"i-cal",     t:"Day schedule",    s:"Tuesday 22 Sep" },
-  { id:"messages", icon:"i-chat",    t:"Messages",        s:"4 unread" },
-  { id:"payments", icon:"i-card",    t:"Payments",        s:"3,100 EGP outstanding" },
-  { id:"reports",  icon:"i-chart",   t:"Reports",         s:"September" },
+  { id:"schedule", icon:"cal",     t:"Day schedule",      s:"Tuesday 22 Sep" },
+  { id:"messages", icon:"chat",    t:"Messages",          s:"4 unread" },
+  { id:"payments", icon:"card",    t:"Payments",          s:"3,100 EGP outstanding" },
+  { id:"reports",  icon:"chart",   t:"Reports",           s:"September" },
   { sep:"Setup" },
-  { id:"services", icon:"i-stetho",  t:"Services & prices", s:"6 active" },
-  { id:"staff",    icon:"i-users",   t:"Staff & rota",    s:"6 people" },
-  { id:"activity", icon:"i-bell",    t:"Activity log",    s:"" },
-  { id:"settings", icon:"i-cog",     t:"Settings",        s:"" },
+  { id:"services", icon:"stetho",  t:"Services & prices", s:"6 active" },
+  { id:"staff",    icon:"users",   t:"Staff & rota",      s:"6 people" },
+  { id:"activity", icon:"bell",    t:"Activity log",      s:"" },
+  { id:"settings", icon:"cog",     t:"Settings",          s:"" },
 ];
 
 function renderDrawer(){
@@ -1514,7 +1581,17 @@ function renderDrawer(){
              ${ic("chev","i sm")}
            </button>`).join("")}
     </nav>
-    <button class="out" data-go="login">${ic("logout","i sm")} Sign out</button>`;
+    <button class="dsc" data-discreet>
+      <span style="opacity:.8">${ic("eye-off")}</span>
+      <span class="grow">
+        <span style="display:block;font-size:14.5px;font-weight:500">Discreet mode</span>
+        <span class="ts" style="color:rgba(255,255,255,.45)">Blur names and services on screen</span>
+      </span>
+      <span class="sw ${discreet?"on":""}"><i></i></span>
+    </button>
+
+    <button class="out" data-go="login">${ic("logout","i sm")} Sign out</button>
+    <p class="note">Prototype · every name, result and price is invented</p>`;
 }
 
 /* ── Engine ─────────────────────────────────────────────── */
@@ -1638,6 +1715,14 @@ vp.addEventListener("click", e => {
   if(t.closest("[data-menu]"))       { openMenu(); return; }
   if(t.closest("[data-close-menu]")) { closeMenu(); return; }
   if(t === scrim)                    { closeMenu(); closeSheet(); return; }
+
+  if(t.closest("[data-discreet]")){
+    discreet = !discreet;
+    renderDrawer();
+    refresh();
+    toast(discreet ? "Discreet mode on" : "Discreet mode off");
+    return;
+  }
 
   const reveal = t.closest("[data-reveal]");
   if(reveal){ reveal.classList.toggle("shown"); return; }
