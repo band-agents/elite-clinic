@@ -227,26 +227,34 @@ export const DOCTORS: Doctor[] = [
     id: "osama-ghattas",
     name: "Dr. Osama Ghattas",
     nameAr: "د. أسامة غطاس",
-    title: "Consultant Andrologist & Urologist",
-    focus: "Andrology, male fertility and men's hormonal health",
+    title: "Consultant Andrologist & Urological Surgeon",
+    focus: "Penile implants, andrology, male fertility and hormonal health",
     initials: "OG",
     accent: "brand",
     days: ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu"],
     serviceIds: ["consultation", "andrology", "fertility", "hormones", "urology", "screening"],
     lead: true,
     bio: [
-      "[PLACEHOLDER — to be replaced with Dr. Osama's own words.] Dr. Osama Ghattas founded Elite " +
-      "Clinic around a single observation: men delay care not because they cannot afford it, but " +
-      "because of how the visit feels. Waiting rooms, shared corridors, receptionists asking loudly " +
-      "what the appointment is for.",
-      "[PLACEHOLDER] The clinic is built to remove every one of those. Private entrance, one patient " +
-      "at a time, appointment-only scheduling, and a file no one reads but the treating physician.",
+      "Dr. Osama Ghattas is a consultant in andrology and urological surgery, with around twenty " +
+      "years in men's health and one of the larger penile implant practices in the region. He is " +
+      "known for the Ghattas Modification — his own refinement of hydraulic implant placement, " +
+      "using a fixation suture to shorten the operation and make reservoir placement in the " +
+      "abdominal wall safer.",
+      "[PLACEHOLDER — the paragraph below is ours, not his. It needs replacing with Dr. Osama's " +
+      "own words.] The clinic is built around one observation: men delay care not because they " +
+      "cannot afford it, but because of how the visit feels. Private entrance, one patient at a " +
+      "time, appointment-only scheduling, and a file no one reads but the treating physician.",
     ],
+    /* Taken from the clinic's own site (darelzokora.com). Client-supplied and
+       unverified — check each line against his CV before launch, and note the
+       source states both 18 and 20 years in different places. */
     credentials: [
-      "[PLACEHOLDER] MBBCh, Faculty of Medicine",
-      "[PLACEHOLDER] Fellowship in Andrology",
-      "[PLACEHOLDER] Member, Egyptian Society of Urology",
-      "[PLACEHOLDER] 15+ years in men's health",
+      "Consultant, andrology and urological surgery",
+      "~20 years in men's health",
+      "10,000+ penile implant procedures",
+      "Originator of the Ghattas Modification for hydraulic implant placement",
+      "Microsurgical varicocele repair and vas obstruction repair",
+      "Advanced urological endoscopy",
     ],
   },
   {
@@ -333,11 +341,21 @@ export const JOURNEY = [
 /* ── Numbers ─────────────────────────────────────────────── */
 
 /** `value` is animated from zero; `suffix` and `prefix` are printed verbatim. */
+/**
+ * The first two come from the clinic's own existing site, darelzokora.com.
+ * They are the doctor's figures, not ours, and they are **unverified** — the
+ * source page states both "20 years" and "more than 18 years" in different
+ * places, so 20 is the number it leads with rather than a number anyone has
+ * checked. Confirm against his CV before this is printed anywhere.
+ *
+ * The last two are the clinic's operating promises, which we can actually
+ * stand behind because they are decisions rather than history.
+ */
 export const STATS = [
-  { value: 15, suffix: "+", label: "Years in men's health", note: "[PLACEHOLDER]" },
+  { value: 20, suffix: "+", label: "Years in men's health", note: "Per the clinic — to confirm" },
+  { value: 20000, suffix: "+", label: "Surgical procedures", note: "Per the clinic — to confirm" },
   { value: 40, suffix: " min", label: "Standard consultation", note: "Not ten." },
   { value: 1, suffix: "", label: "Patient in clinic at a time", note: "By design, not by luck." },
-  { value: 48, suffix: "h", label: "Results in your portal", note: "Most land the same day." },
 ] as const;
 
 /* ── Reviews ─────────────────────────────────────────────── */

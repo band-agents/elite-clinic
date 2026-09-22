@@ -36,7 +36,7 @@ import {
   CountUp, Drift, IndexNum, Kicker, LiveDot, RuleDraw, SplitText, WordMarquee,
 } from "@/components/editorial";
 import { ServiceExplorer } from "@/components/ServiceExplorer";
-import { Shot } from "@/components/Shot";
+import { Portrait } from "@/components/Portrait";
 import { Logo } from "@/components/Logo";
 
 export function Home() {
@@ -113,19 +113,29 @@ function Hero() {
             </Reveal>
           </div>
 
-          {/* The cover image, offset and drifting — a spread, not a banner. */}
-          <Reveal delay={0.2} className="hidden lg:block">
+          {/* The cover portrait, offset and drifting — a spread, not a banner.
+              Shown on phones too: it is the first thing the clinic wants seen,
+              and hiding it below lg meant most visitors never did. */}
+          {/* Capped near the source's native 296px. The clinic's site only has
+              600×600 originals, and letting the column stretch it to ~450px
+              put it at 1.5x — visibly soft on a retina screen. A real shoot
+              is still owed. */}
+          <Reveal delay={0.2} className="mx-auto w-full max-w-[260px] sm:max-w-[300px] lg:mx-0 lg:ml-auto lg:max-w-[340px]">
             <Drift amount={34}>
               <div className="relative">
-                <Shot
-                  label="Dr. Osama Ghattas — cover portrait, navy suit, low key"
-                  ratio="3/4"
-                  className="!rounded-none"
-                />
+                <Portrait name="suit" priority className="aspect-[296/504] w-full" />
                 <span
                   className="pointer-events-none absolute -inset-3 border border-white/15"
                   aria-hidden
                 />
+                <figcaption className="absolute -bottom-px left-0 right-0 bg-brand-deep/80 px-4 py-3 backdrop-blur-sm">
+                  <p className="font-display text-[17px] leading-tight text-white">
+                    {BRAND.doctor}
+                  </p>
+                  <p className="mt-0.5 text-[11.5px] text-white/55">
+                    Consultant andrologist &amp; urologist
+                  </p>
+                </figcaption>
               </div>
             </Drift>
           </Reveal>
@@ -419,12 +429,7 @@ function Consultant() {
         <Reveal delay={0.08}>
           <Drift amount={28} className="relative">
             <div className="relative">
-              <Shot
-                label="Dr. Osama Ghattas — half length, consulting room"
-                ratio="4/5"
-                tone="sand"
-                className="!rounded-none"
-              />
+              <Portrait name="coat" className="aspect-[300/430] w-full" />
               <span className="pointer-events-none absolute -inset-4 border border-brand/20" aria-hidden />
               <div className="absolute -bottom-6 -left-6 max-w-[200px] bg-brand p-5 text-white">
                 <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/45">

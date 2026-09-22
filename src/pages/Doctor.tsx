@@ -14,6 +14,7 @@ import { DOCTORS, PROMISES } from "@/data/clinic";
 import { Avatar, ButtonLink, Pill, Reveal, RevealGroup, RevealItem } from "@/components/ui";
 import { PageHead } from "@/components/PageHead";
 import { Shot } from "@/components/Shot";
+import { Portrait } from "@/components/Portrait";
 
 export function Doctor() {
   const lead = DOCTORS.find((d) => d.lead)!;
@@ -39,16 +40,16 @@ export function Doctor() {
       <section className="u-wrap pb-20">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal>
-            <Shot label="Dr. Osama Ghattas — formal portrait, navy suit, seated" ratio="4/5" />
+            <Portrait name="suit" className="aspect-[296/504] w-full" />
             <div className="mt-4 grid grid-cols-2 gap-4">
-              <Shot label="Detail — hands, consultation" ratio="1/1" tone="sand" />
-              <Shot label="Detail — desk, notes" ratio="1/1" tone="mint" />
+              <Portrait name="coat" className="aspect-square" />
+              <Shot label="Detail — consulting room" ratio="1/1" tone="sand" />
             </div>
           </Reveal>
 
           <div>
             <Reveal>
-              <Pill tone="coral">Placeholder biography — pending the clinic&apos;s copy</Pill>
+              <Pill tone="coral">Credentials from the clinic&apos;s own site — to verify against his CV</Pill>
             </Reveal>
 
             {lead.bio?.map((para, i) => (
