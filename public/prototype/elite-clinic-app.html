@@ -210,22 +210,32 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
   position:absolute;top:0;bottom:0;left:0;width:82%;z-index:95;
   background:var(--navy);color:#fff;transform:translateX(-102%);
   transition:transform .42s var(--ease);
-  display:flex;flex-direction:column;padding:58px 22px 30px;
+  display:flex;flex-direction:column;padding:58px 22px 20px;
   box-shadow:24px 0 60px -30px rgba(0,0,0,.6);
 }
 .drawer.on{transform:translateX(0)}
-.drawer .me{display:flex;align-items:center;gap:12px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.14)}
-.drawer nav{flex:1;overflow-y:auto;padding-top:14px;scrollbar-width:none}
+.drawer .me{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,.14)}
+/* Tight enough that all eight destinations fit without scrolling. A menu you
+   have to scroll to reach Settings in reads as half-finished. */
+.drawer nav{flex:1;overflow-y:auto;padding-top:8px;scrollbar-width:none}
 .drawer nav::-webkit-scrollbar{display:none}
 .drawer nav button{
-  display:flex;align-items:center;gap:13px;width:100%;padding:12px 12px;border-radius:15px;
+  display:flex;align-items:center;gap:13px;width:100%;padding:10px 12px;border-radius:15px;
   font-size:14.5px;font-weight:500;color:rgba(255,255,255,.82);transition:background .2s;
 }
-.drawer nav button:active{background:rgba(255,255,255,.12)}
-.drawer nav .sep{margin:14px 12px 8px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
-.drawer .out{margin-top:10px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px;border-radius:99px;border:1px solid rgba(255,255,255,.22);font-size:14px;font-weight:600;color:#fff}
-.drawer .note{margin-top:14px;text-align:center;font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
-.drawer .dsc{display:flex;align-items:center;gap:13px;width:100%;padding:13px 12px;border-radius:15px;border-top:1px solid rgba(255,255,255,.14);margin-top:8px;color:rgba(255,255,255,.85)}
+.drawer nav button:active,.drawer nav button:hover{background:rgba(255,255,255,.09)}
+/* The trailing chevron: pinned right, faint, and nudged on hover. */
+.drawer nav button > svg:last-child{
+  margin-left:auto;opacity:.32;transition:transform .2s var(--ease),opacity .2s;
+}
+.drawer nav button:hover > svg:last-child{opacity:.7;transform:translateX(3px)}
+.drawer nav button > span:first-child{
+  width:26px;display:grid;place-items:center;flex:none;opacity:.75;
+}
+.drawer nav .sep{margin:10px 12px 5px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.drawer .out{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:9px;padding:11px;border-radius:99px;border:1px solid rgba(255,255,255,.22);font-size:14px;font-weight:600;color:#fff}
+.drawer .note{margin-top:9px;text-align:center;font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+.drawer .dsc{display:flex;align-items:center;gap:13px;width:100%;padding:10px 12px;border-radius:15px;border-top:1px solid rgba(255,255,255,.14);margin-top:8px;color:rgba(255,255,255,.85)}
 .drawer .dsc .ts{font-size:11.5px}
 .sw{width:44px;height:26px;border-radius:99px;background:rgba(255,255,255,.22);position:relative;flex:none;transition:background .22s}
 .sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .22s var(--ease)}
@@ -312,7 +322,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .av.lg{width:56px;height:56px;border-radius:18px;font-size:17px}
 
 .row{display:flex;align-items:center;gap:12px}
-.row .grow{flex:1;min-width:0}
+/* Global, not scoped to .row — the drawer buttons and list rows are flex
+   containers too, and scoping it here left their trailing chevrons hugging
+   the label instead of sitting at the right edge. */
+.grow{flex:1;min-width:0}
 .tt{font-size:14.5px;font-weight:600}
 .ts{font-size:12px;color:var(--ink-faint);margin-top:2px}
 .tnum{font-variant-numeric:tabular-nums}
@@ -441,10 +454,25 @@ svg.i.sm{width:15px;height:15px}
 svg.i.lg{width:24px;height:24px}
 svg.i.xl{width:40px;height:40px;stroke-width:1.4}
 
-/* Narrow desktop / tablet: stack the note above the device, keep the frame. */
+/* The frame is a fixed 402×874 box. It is scaled to fit by fitDevice() rather
+   than shrunk by CSS, because squashing the height alone turns the phone into
+   a letterbox — the proportions are half the point of showing a device. */
+.device{transform-origin:top center}
+
+/* Narrow desktop / tablet: the note goes, so the device gets the whole
+   window. Stacking it above only pushed the phone off the bottom edge. */
 @media(max-width:900px){
-  body{flex-direction:column;padding:28px 16px}
-  .aside{max-width:var(--w)}
+  body{padding:20px 16px}
+  .aside{display:none}
+}
+
+/* A short window. The note column runs to about 530px of text, so on a laptop
+   in a half-height window IT — not the phone — is what makes the page scroll:
+   body is a centred flex row, so its height is the tallest item. Drop the
+   note and the device gets the window to itself. */
+@media(max-height:660px){
+  body{padding:20px}
+  .aside{display:none}
 }
 
 /* An actual phone.
@@ -1585,7 +1613,7 @@ function renderDrawer(){
       <span style="opacity:.8">${ic("eye-off")}</span>
       <span class="grow">
         <span style="display:block;font-size:14.5px;font-weight:500">Discreet mode</span>
-        <span class="ts" style="color:rgba(255,255,255,.45)">Blur names and services on screen</span>
+        <span class="ts" style="color:rgba(255,255,255,.45)">Blur names and services</span>
       </span>
       <span class="sw ${discreet?"on":""}"><i></i></span>
     </button>
@@ -1817,6 +1845,61 @@ function handleWiz(btn){
      or "Done" clears the draft and leaves you staring at the success screen. */
   if(a === "reset"){ draft = null; root(btn.dataset.root || "bookings"); return; }
 }
+
+/* ── Fit the device to the window ───────────────────────── */
+
+/**
+ * The frame is a fixed 402×874. On any window shorter than about 950px — a
+ * laptop, a tablet, a browser that is not full screen — the bottom simply
+ * fell off the page, taking the tab bar with it.
+ *
+ * Scaling the whole frame keeps the phone's proportions, which shrinking the
+ * height in CSS would not. The negative margin reclaims the layout space the
+ * scaled-down element is no longer using: `transform` does not affect layout,
+ * so without it the page keeps reserving the full 874px and centres the phone
+ * against a column of empty air.
+ *
+ * Below 760px there is no frame at all — the app is the page — so this backs
+ * off entirely.
+ */
+const deviceEl = document.querySelector(".device");
+const phoneMQ = window.matchMedia("(max-width: 760px)");
+
+function fitDevice(){
+  if(phoneMQ.matches){
+    deviceEl.style.transform = "";
+    deviceEl.style.marginBottom = "";
+    return;
+  }
+  /* Measured, not guessed: the body's padding changes at the 900px
+     breakpoint, and a hard-coded gutter left the frame overhanging the
+     viewport by exactly the difference. */
+  const cs = getComputedStyle(document.body);
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+
+  const aside = document.querySelector(".aside");
+  const asideW = aside && getComputedStyle(aside).display !== "none"
+    ? aside.getBoundingClientRect().width + parseFloat(cs.columnGap || 0)
+    : 0;
+
+  const scale = Math.min(
+    1,
+    (window.innerHeight - padY - 8) / 874,
+    (window.innerWidth - padX - asideW - 8) / 402,
+  );
+  if(scale >= 0.999){
+    deviceEl.style.transform = "";
+    deviceEl.style.marginBottom = "";
+  } else {
+    deviceEl.style.transform = `scale(${scale})`;
+    deviceEl.style.marginBottom = `${-Math.round(874 * (1 - scale))}px`;
+  }
+}
+
+window.addEventListener("resize", fitDevice, { passive:true });
+phoneMQ.addEventListener("change", fitDevice);
+fitDevice();
 
 /* ── Boot ───────────────────────────────────────────────── */
 root("today");
