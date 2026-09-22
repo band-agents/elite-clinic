@@ -16,7 +16,8 @@ every name, price, credential and medical result in the repo is invented.
 | **Elite Passage** | The international patients programme: a ten-step journey, three tiers, and an enquiry form that accepts a foreign number |
 | **Booking** | 4-step flow with deep links, deterministic slot generation, Egyptian phone validation |
 | **Patient portal** | Sign-in, dashboard, appointments, results & documents, lab tables with reference ranges, medical history, medication, invoices, settings |
-| **Clinic app** | 19-screen interactive HTML prototype of the clinic-side mobile app — `public/prototype/elite-clinic-app.html` |
+| **Clinic app** | The clinic-side mobile app as one working iPhone — 20 screens, real back stack, booking wizard — `public/prototype/elite-clinic-app.html` |
+| **Patient app** | The same app from the patient's side — 27 screens: visits, records, results with reference ranges, history, medications, care plan, payments — `public/prototype/elite-clinic-patient-app.html` |
 
 ---
 
@@ -34,10 +35,17 @@ Dev server on **http://localhost:5195**.
 - Patient portal — `/portal` (any phone number and any six digits sign you in)
 - International programme — `/international`
 - Clinic app prototype — `/prototype/elite-clinic-app.html`
+- Patient app prototype — `/prototype/elite-clinic-patient-app.html`
 
-The prototype lives in `public/`, so Vite copies it into `dist` and it ships
-with the site at that URL. It is a single self-contained HTML file and also
-opens directly from disk with no server — that is the copy to send a client.
+Both prototypes live in `public/`, so Vite copies them into `dist` and they
+ship with the site at those URLs. Each is a single self-contained HTML file
+that also opens directly from disk with no server — those are the copies to
+send a client.
+
+They share one chassis: the same stylesheet, the same navigation engine, the
+same device frame. On a screen narrower than 760px the frame is dropped
+entirely and the app becomes the page, because a phone drawn inside a real
+one wastes a third of the screen.
 
 ```bash
 npm run build       # typecheck, then production build
