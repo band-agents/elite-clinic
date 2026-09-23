@@ -129,19 +129,36 @@ function Hero() {
 
       <div className="u-wrap relative z-10">
         {WITH_PHOTO ? (
-          /* The portrait carries a real alpha channel, so it sits straight on
-             the navy — no panel the colour of its own background, no cutting.
-             It is bottom-aligned and the column loses its padding at lg so he
-             meets the edge of the band rather than floating above it. */
-          <div className="grid items-end gap-8 pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:pt-36">
-            <div className="pb-14 lg:pb-24">
+          /* The complete seated figure, entirely inside the band.
+             The previous hero bled a half-body shot to the bottom edge, and a
+             hard horizontal line through a man's thigh reads as a mistake
+             however clean the cutout is. This shot includes the chair legs
+             and the shoes and touches none of its own edges, so there is
+             nothing to cut — it just has to be given room, which means normal
+             section padding and items-center rather than a bleed. */
+          <div className="grid items-center gap-10 py-24 lg:grid-cols-[1.05fr_0.9fr] lg:gap-12 lg:py-28">
+            <div>
               <HeroCopy />
             </div>
-            <Reveal
-              delay={0.2}
-              className="mx-auto w-full max-w-[360px] self-end lg:mx-0 lg:ml-auto lg:max-w-[440px]"
-            >
-              <Portrait />
+            {/* Sized by HEIGHT at lg, not width. A complete seated figure is
+                about twice as tall as it is wide, so constraining the width
+                pushed the hero past 1000px and the whole band fell below the
+                fold. Capping the height keeps it to roughly one screen. */}
+            <Reveal delay={0.2} className="flex w-full justify-center lg:justify-end">
+              <div className="relative w-full max-w-[290px] sm:max-w-[330px] lg:w-auto lg:max-w-none">
+                {/* A soft pool of shadow under the chair. Without it a free-
+                    floating figure hovers; with it he is sitting somewhere. */}
+                <span
+                  className="pointer-events-none absolute inset-x-0 bottom-[2%] mx-auto h-14 w-[76%] rounded-[50%]
+                             bg-black/40 blur-2xl"
+                  aria-hidden
+                />
+                <Portrait
+                  name="seated"
+                  eager
+                  className="relative w-full lg:h-[600px] lg:w-auto"
+                />
+              </div>
             </Reveal>
           </div>
         ) : (
@@ -351,6 +368,15 @@ function Consultant() {
         </div>
 
         <Reveal delay={0.08}>
+          {/* In the photo build the record card is topped by the head-and-
+              torso shot. That crop is cut at mid-thigh, so it only works
+              inside a panel like this one, where the frame is plainly doing
+              the cutting. On the hero it would look broken. */}
+          {WITH_PHOTO && (
+            <div className="relative flex items-end justify-center overflow-hidden bg-sand pt-10">
+              <Portrait name="portrait" className="w-[86%] max-w-[340px]" />
+            </div>
+          )}
           <div className="bg-brand p-9 text-white sm:p-10">
             <Kicker tone="text-gold" rule="bg-gold/40">The record</Kicker>
             <p className="mt-6 font-display text-[clamp(26px,3.2vw,36px)] leading-[1.1]">

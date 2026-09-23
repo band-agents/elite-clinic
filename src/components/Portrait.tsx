@@ -1,13 +1,24 @@
 /**
- * The consultant's portrait — only rendered in the photo build.
+ * The consultant's portraits — only rendered in the photo build.
  *
- * The file is a studio shot supplied by the clinic with a real alpha channel,
- * so it drops onto the navy with no halo and no cutting. That is why it can
- * sit directly on the hero instead of needing a panel the colour of its own
- * background, which is what the previous, flat-backed photographs required.
+ * Both are studio shots supplied by the clinic with real alpha channels, so
+ * they drop onto any background with no halo and no cutting.
  *
- * WebP only. The PNG fallback of an alpha image this size was 1.3MB against
- * 170KB, and every browser that matters has read WebP for years.
+ * There are two, and which one goes where is the whole point:
+ *
+ *   seated  — the complete figure, chair legs and shoes included. It touches
+ *             none of its own edges, so nothing about it is cut. This is the
+ *             one that can float free on the hero. The previous hero used a
+ *             half-body shot bled to the bottom of the band, and a hard
+ *             horizontal edge through a man's thigh reads as a mistake no
+ *             matter how clean the cutout is.
+ *
+ *   portrait — head and torso, cut at mid-thigh. It only works inside a
+ *             defined panel, where the crop is obviously the frame's doing
+ *             rather than a broken image.
+ *
+ * WebP only. A PNG fallback for alpha images this size runs to megabytes, and
+ * every browser that matters has read WebP for years.
  */
 
 import { cx } from "@/components/ui";
@@ -17,17 +28,28 @@ import { cx } from "@/components/ui";
 const asset = (path: string) =>
   `${import.meta.env.BASE_URL}${path}`.replace(/([^:]\/)\/+/g, "$1");
 
-export function Portrait({ className }: { className?: string }) {
+const FILES = {
+  seated: { file: "media/dr-seated.webp", w: 727, h: 1489 },
+  portrait: { file: "media/dr-portrait.webp", w: 680, h: 780 },
+} as const;
+
+export function Portrait({
+  name, className, eager,
+}: {
+  name: keyof typeof FILES;
+  className?: string;
+  eager?: boolean;
+}) {
+  const f = FILES[name];
   return (
     <img
-      src={asset("media/dr-osama.webp")}
+      src={asset(f.file)}
       alt="Dr. Osama Ghattas, consultant andrologist and urological surgeon"
-      width={860}
-      height={1230}
-      /* Above the fold — never lazy, or it arrives after the hero has settled. */
-      loading="eager"
-      decoding="sync"
-      className={cx("block h-auto w-full select-none", className)}
+      width={f.w}
+      height={f.h}
+      loading={eager ? "eager" : "lazy"}
+      decoding={eager ? "sync" : "async"}
+      className={cx("block h-auto select-none", className)}
       draggable={false}
     />
   );
