@@ -68,8 +68,8 @@ export function Contact() {
             </RevealGroup>
 
             <Reveal className="mt-4">
-              <div className="flex items-start gap-4 rounded-3xl border border-mint/25 bg-mint-wash p-6">
-                <Car size={19} className="mt-0.5 shrink-0 text-mint" />
+              <div className="flex items-start gap-4 rounded-3xl border border-gold/25 bg-gold-wash p-6">
+                <Car size={19} className="mt-0.5 shrink-0 text-gold-deep" />
                 <div>
                   <p className="text-[14.5px] font-semibold text-ink">Parking and the private entrance</p>
                   <p className="mt-1.5 text-[13.5px] leading-relaxed text-ink-soft">
@@ -126,9 +126,9 @@ function MessageForm() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={soft(0.4)}
-        className="rounded-3xl border border-mint/30 bg-white p-10 text-center"
+        className="rounded-3xl border border-gold/30 bg-white p-10 text-center"
       >
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-mint-wash text-mint">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gold-wash text-gold-deep-deep">
           <Check size={24} strokeWidth={2.5} />
         </span>
         <h2 className="mt-6 text-[26px]">Message received</h2>
@@ -147,7 +147,7 @@ function MessageForm() {
       className="rounded-3xl border border-line bg-white p-8 shadow-[0_24px_60px_-48px] shadow-brand/60"
       noValidate
     >
-      <Pill tone="mint"><ShieldCheck size={12} /> Read only by the clinic</Pill>
+      <Pill tone="gold"><ShieldCheck size={12} /> Read only by the clinic</Pill>
       <h2 className="mt-5 text-[28px]">Send a message</h2>
       <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft">
         You do not have to say what it is about. Tell us as much or as little as you want — we

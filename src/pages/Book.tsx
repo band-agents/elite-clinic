@@ -318,7 +318,7 @@ function Stepper({ current }: { current: number }) {
             <span
               className={cx(
                 "grid h-8 w-8 shrink-0 place-items-center rounded-full text-[12.5px] font-semibold transition-colors",
-                done && "bg-mint text-white",
+                done && "bg-gold text-white",
                 active && "bg-brand text-white",
                 !done && !active && "bg-white text-ink-faint border border-line",
               )}
@@ -334,7 +334,7 @@ function Stepper({ current }: { current: number }) {
               {s.label}
             </span>
             {s.n < STEPS.length && (
-              <span className={cx("h-px flex-1", done ? "bg-mint" : "bg-line")} />
+              <span className={cx("h-px flex-1", done ? "bg-gold" : "bg-line")} />
             )}
           </li>
         );
@@ -445,7 +445,7 @@ function StepDoctor({
           onSelect={() => set("doctorId", "any")}
         >
           <span className="flex items-center gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-mint-wash text-mint">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gold-wash text-gold-deep-deep">
               <Sparkles size={19} />
             </span>
             <span className="pr-6">
@@ -744,7 +744,7 @@ function Summary({
           { icon: MessageCircle, t: "Nothing we send names the service" },
         ].map((f) => (
           <li key={f.t} className="flex items-start gap-2.5 text-[12.5px] leading-snug text-ink-soft">
-            <f.icon size={14} className="mt-0.5 shrink-0 text-mint" />
+            <f.icon size={14} className="mt-0.5 shrink-0 text-gold-deep" />
             {f.t}
           </li>
         ))}
@@ -775,7 +775,7 @@ function Confirmation({ draft, reference }: { draft: Draft; reference: string })
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={springy}
-          className="grid h-16 w-16 place-items-center rounded-3xl bg-mint text-white"
+          className="grid h-16 w-16 place-items-center rounded-3xl bg-gold text-white"
         >
           <Check size={30} strokeWidth={2.5} />
         </motion.span>

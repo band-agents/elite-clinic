@@ -166,7 +166,7 @@ export interface PassageTier {
   fromUsd: number;
   nights: string;
   features: string[];
-  accent: "brand" | "mint" | "coral";
+  accent: "brand" | "gold" | "coral";
   featured?: boolean;
 }
 
@@ -177,7 +177,7 @@ export const PASSAGE_TIERS: PassageTier[] = [
     tagline: "For a consultation and a workup, in and out in three days.",
     fromUsd: 900,
     nights: "3 nights",
-    accent: "mint",
+    accent: "gold",
     features: [
       "Pre-travel case review and written quote",
       "Visa invitation letter",

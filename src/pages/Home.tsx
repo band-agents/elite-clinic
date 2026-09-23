@@ -1,67 +1,66 @@
 /**
  * Landing page.
  *
- * Structure, in the order a stranger needs it:
- *   hero → the four doors → why this clinic → what we treat → proof
- *   → how a visit works → the consultant → voices → journal
- *   → coming from abroad → book or sign in
+ * Order, and why:
+ *   hero → what we treat → why here → the visit → proof → the consultant
+ *   → travelling to us → what men say → journal → book or sign in
  *
- * Men's health leads and the Elite-branded programme closes. Almost everyone
- * arriving is asking "is this for my problem?", not "what is this brand?" —
- * the hero names what is treated, and Elite Passage waits until the bottom,
- * where the minority it applies to will still find it.
+ * What we treat comes second, immediately under the hero. Almost everyone who
+ * lands is asking one question — is this for my problem? — and the page used
+ * to make them scroll past three bands of positioning before answering it.
  *
- * The identity is editorial rather than clinical, and there are no
- * photographs anywhere on the site. A clinic men come to precisely because
- * they would rather not be seen is a strange place to put faces — type does
- * the work, which is also more discreet and a good deal faster to load. No
- * heart traces, no pulse rings, no stock stethoscopes either. What carries the page instead is
- * magazine furniture — oversized Fraunces display, hairline rules that draw
- * themselves in, index numerals in the margin, wide-tracked small caps, and
- * a contents strip under the hero.
+ * The international programme is a single band near the end rather than a
+ * section competing with the clinical work. It matters to a minority of
+ * visitors and it reads as a service, not as the headline.
  *
- * The hero's atmosphere is a CSS-animated navy field rather than a video. The
- * hospital build rendered an mp4 with Remotion; that is a 6MB asset, a render
- * step, and a path that 404s the moment the site is not served from "/".
+ * Every band goes through <Section>, which owns the gutters and the vertical
+ * rhythm. Backgrounds run full width, content never does.
+ *
+ * Two builds come out of this file. VITE_HERO_PHOTO=1 gives the hero with the
+ * consultant's portrait; without it the hero is typographic. Nothing else
+ * differs between them.
  */
 
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, CalendarCheck, ChevronRight, MessageCircle, UserRound,
-  Quote, ShieldCheck, Stethoscope,
+  ArrowRight, CalendarCheck, ChevronRight, Globe2, MessageCircle,
+  Quote, ShieldCheck, Stethoscope, UserRound,
 } from "lucide-react";
 
 import { BRAND } from "@/lib/brand";
 import { ARTICLES, JOURNEY, PROMISES, REVIEWS, STATS } from "@/data/clinic";
-import { PASSAGE, PASSAGE_COUNTRIES } from "@/data/international";
+import { PASSAGE } from "@/data/international";
 import { springy } from "@/lib/motion";
 import {
   ButtonLink, Pill, Reveal, RevealGroup, RevealItem, Stars, cx,
 } from "@/components/ui";
+import { Section } from "@/components/Section";
 import {
-  CountUp, Drift, IndexNum, Kicker, LiveDot, RuleDraw, SplitText, WordMarquee,
+  CountUp, IndexNum, Kicker, LiveDot, RuleDraw, SplitText,
 } from "@/components/editorial";
 import { ServiceExplorer } from "@/components/ServiceExplorer";
+import { Portrait } from "@/components/Portrait";
 import { Logo } from "@/components/Logo";
+
+/** Set at build time. Two deploys, one source. */
+const WITH_PHOTO = import.meta.env.VITE_HERO_PHOTO === "1";
+
+const TREATS = ["Erectile function", "Male fertility", "Testosterone", "Prostate & urology"];
 
 export function Home() {
   return (
     <>
       <Hero />
-      <QuickAccess />
-      <Manifesto />
+      <QuickStrip />
       <ServiceExplorer />
-      <Numbers />
+      <Promises />
       <Journey />
+      <Numbers />
       <Consultant />
+      <Passage />
       <Voices />
       <JournalStrip />
-      {/* Elite Passage sits at the bottom on purpose. It is the premium,
-          Elite-branded programme and it applies to a minority of visitors —
-          leading with it made the page about the brand rather than about
-          men's health, which is what almost everyone arrives looking for. */}
-      <PassageStrip />
       <TwoDoors />
     </>
   );
@@ -69,195 +68,167 @@ export function Home() {
 
 /* ── Hero ────────────────────────────────────────────────── */
 
-/** The contents strip under the hero — a magazine's front-of-book listing. */
-const CONTENTS = [
-  { n: "01", label: "What we treat", href: "/services" },
-  { n: "02", label: "The consultant", href: "/doctor" },
-  { n: "03", label: "International", href: "/international" },
-  { n: "04", label: "Journal", href: "/journal" },
-];
-
-function Hero() {
+function HeroCopy() {
   return (
     <>
-      <section className="u-grain relative overflow-hidden bg-brand-deep">
-        <div className="u-hero-field absolute inset-0" aria-hidden />
-        <div className="u-scrim absolute inset-0" aria-hidden />
+      <Reveal>
+        <Pill tone="light">
+          <LiveDot className="bg-gold" />
+          By appointment only · Sheikh Zayed
+        </Pill>
+      </Reveal>
 
-        {/* The mint field carries the promise in display type. It held a
-            photograph of the consultant until now; a clinic men come to
-            precisely because they would rather not be seen is a strange place
-            to put a face, and the sentence says it harder than the picture
-            did. */}
-        <div className="absolute inset-y-0 right-0 hidden w-[42%] items-center bg-mint px-12 lg:flex xl:w-[38%]">
-          <p className="font-display text-[clamp(26px,2.6vw,38px)] leading-[1.18] text-white">
-            No waiting room.<br />
-            No shared corridor.<br />
-            No one asking what<br />you are here for.
+      <SplitText
+        text="Men's health, handled privately."
+        as="h1"
+        delay={0.12}
+        className="mt-7 max-w-[13ch] text-[clamp(44px,8vw,96px)] leading-[0.95] text-white"
+      />
+
+      <Reveal delay={0.28}>
+        <div className="mt-8 flex max-w-xl items-start gap-5">
+          <RuleDraw tone="bg-gold/50" className="mt-3 w-12 shrink-0" delay={0.4} />
+          <p className="text-[17px] leading-[1.8] text-white/75">
+            Men do not delay care because of the medicine. They delay it because of the waiting
+            room &mdash; so there isn&apos;t one. A private entrance, one patient in the clinic at
+            a time, and forty unhurried minutes.
           </p>
         </div>
+      </Reveal>
 
-        <div className="u-wrap relative z-10 grid items-end gap-10 pt-28 lg:min-h-[620px] lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-36">
-          <div className="pb-12 lg:pb-24">
-            <Reveal>
-              <Pill tone="light">
-                <LiveDot />
-                By appointment only · Sheikh Zayed
-              </Pill>
-            </Reveal>
-
-            <SplitText
-              text="Men's health, handled privately."
-              as="h1"
-              delay={0.12}
-              className="mt-7 max-w-[14ch] text-[clamp(46px,9vw,112px)] leading-[0.94] text-white"
-            />
-
-            <Reveal delay={0.3}>
-              <div className="mt-8 flex max-w-xl items-start gap-5">
-                <RuleDraw tone="bg-white/25" className="mt-3 w-12 shrink-0" delay={0.4} />
-                <p className="text-[17px] leading-[1.8] text-white/75">
-                  Men do not delay care because of the medicine. They delay it because of the
-                  waiting room &mdash; so there isn&apos;t one. A private entrance, one patient in
-                  the clinic at a time, and forty unhurried minutes with {BRAND.doctor}.
-                </p>
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.38}>
-              <div className="mt-10 flex flex-wrap items-center gap-3">
-                <ButtonLink href="/book" tone="white" size="lg">
-                  <CalendarCheck size={18} /> Book an appointment
-                </ButtonLink>
-                <ButtonLink href={BRAND.whatsappHref} tone="light" size="lg" external>
-                  <MessageCircle size={17} /> Ask privately
-                </ButtonLink>
-              </div>
-            </Reveal>
-
-            {/* What is actually treated, in the hero. The top of the page has
-                to answer "is this for my problem?" before anything else. */}
-            <Reveal delay={0.46}>
-              <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2">
-                {["Erectile function", "Male fertility", "Testosterone", "Prostate & urology"].map((t) => (
-                  <li key={t} className="flex items-center gap-2 text-[13.5px] text-white/60">
-                    <span className="h-1 w-1 rounded-full bg-mint" aria-hidden />
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
-
-          {/* Below lg the mint field is not in the layout, so the promise gets
-              its own band, bled to the screen edges rather than boxed. */}
-          <Reveal className="u-bleed bg-mint px-7 py-11 lg:hidden">
-            <p className="font-display text-[clamp(24px,6.5vw,32px)] leading-[1.2] text-white">
-              No waiting room. No shared corridor. No one asking what you are here for.
-            </p>
-          </Reveal>
+      <Reveal delay={0.36}>
+        <div className="mt-10 flex flex-wrap items-center gap-3">
+          <ButtonLink href="/book" tone="white" size="lg">
+            <CalendarCheck size={18} /> Book an appointment
+          </ButtonLink>
+          <ButtonLink href={BRAND.whatsappHref} tone="light" size="lg" external>
+            <MessageCircle size={17} /> Ask privately
+          </ButtonLink>
         </div>
-      </section>
+      </Reveal>
 
-      <Contents />
+      <Reveal delay={0.44}>
+        <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2">
+          {TREATS.map((t) => (
+            <li key={t} className="flex items-center gap-2 text-[13.5px] text-white/60">
+              <span className="h-1 w-1 rounded-full bg-gold" aria-hidden />
+              {t}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </>
   );
 }
 
-
-/** The contents strip — a magazine's front-of-book listing, on its own band
-    so the hero above it can run its mint field edge to edge. */
-function Contents() {
+function Hero() {
   return (
     <section className="u-grain relative overflow-hidden bg-brand-deep">
+      <div className="u-hero-field absolute inset-0" aria-hidden />
+      <div className="u-scrim absolute inset-0" aria-hidden />
+
       <div className="u-wrap relative z-10">
-        <ul className="grid gap-x-10 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
-          {CONTENTS.map((c) => (
-            <li key={c.n}>
-              <Link href={c.href} className="group flex items-baseline gap-4 py-6 transition-colors">
-                <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-mint">
-                  {c.n}
-                </span>
-                <span className="font-display text-[19px] text-white/80 transition-colors group-hover:text-white">
-                  {c.label}
-                </span>
-                <ArrowRight
-                  size={15}
-                  className="ml-auto self-center text-white/25 transition-all group-hover:translate-x-1 group-hover:text-white/70"
-                />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {WITH_PHOTO ? (
+          /* The portrait carries a real alpha channel, so it sits straight on
+             the navy — no panel the colour of its own background, no cutting.
+             It is bottom-aligned and the column loses its padding at lg so he
+             meets the edge of the band rather than floating above it. */
+          <div className="grid items-end gap-8 pt-28 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:pt-36">
+            <div className="pb-14 lg:pb-24">
+              <HeroCopy />
+            </div>
+            <Reveal
+              delay={0.2}
+              className="mx-auto w-full max-w-[360px] self-end lg:mx-0 lg:ml-auto lg:max-w-[440px]"
+            >
+              <Portrait />
+            </Reveal>
+          </div>
+        ) : (
+          <div className="py-28 lg:py-36">
+            <div className="max-w-3xl">
+              <HeroCopy />
+            </div>
+
+            {/* The promise, in gold type rather than a colour block. A field of
+                accent that size read as decoration; a sentence reads as a
+                claim. */}
+            <Reveal delay={0.5}>
+              <div className="mt-16 border-t border-white/12 pt-10">
+                <p className="max-w-3xl font-display text-[clamp(24px,3.4vw,42px)] leading-[1.18] text-gold">
+                  No waiting room. No shared corridor. No one asking what you are here for.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
+/* ── Quick strip ─────────────────────────────────────────── */
 
-/* ── Quick access ────────────────────────────────────────── */
-
-/* The four doors, all men's-health first. "Coming from abroad" used to sit
-   here in slot two; it moved down to the Elite Passage section, because the
-   top of the page belongs to what the clinic treats, not to the programme. */
 const QUICK = [
   { icon: CalendarCheck, title: "Book a visit", text: "Six services, real slots.", href: "/book" },
   { icon: Stethoscope, title: "What we treat", text: "Andrology to hormonal health.", href: "/services" },
-  { icon: UserRound, title: "Meet Dr. Osama", text: "Your consultant, every visit.", href: "/doctor" },
+  { icon: UserRound, title: "Your consultant", text: "The same doctor, every visit.", href: "/doctor" },
   { icon: ShieldCheck, title: "Patient portal", text: "Results, scans, prescriptions.", href: "/portal" },
 ];
 
-function QuickAccess() {
+function QuickStrip() {
   return (
-    <section className="relative z-20 -mt-14">
-      <div className="u-wrap">
-        <RevealGroup className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" each={0.06}>
-          {QUICK.map(({ icon: Icon, title, text, href }) => (
-            <RevealItem key={title}>
-              <Link href={href} asChild>
-                <motion.a
-                  className="group flex h-full items-start gap-4 border border-white/70 bg-white/94
-                             p-6 shadow-[0_20px_50px_-30px_rgba(14,42,71,0.7)] backdrop-blur-xl"
-                  whileHover={{ y: -4 }}
-                  transition={springy}
-                >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center bg-brand-wash text-brand
-                                   transition-colors duration-300 group-hover:bg-brand group-hover:text-white">
-                    <Icon size={19} />
-                  </span>
-                  <span>
-                    <span className="block text-[15px] font-semibold text-ink">{title}</span>
-                    <span className="mt-0.5 block text-[13.5px] leading-snug text-ink-soft">{text}</span>
-                  </span>
-                  <ChevronRight
-                    size={16}
-                    className="ml-auto mt-3 shrink-0 text-ink-faint transition-transform duration-300
-                               group-hover:translate-x-1 group-hover:text-brand"
-                  />
-                </motion.a>
-              </Link>
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      </div>
-    </section>
+    <Section tone="white" innerClassName="py-0">
+      <RevealGroup
+        className="grid divide-y divide-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4"
+        each={0.06}
+      >
+        {QUICK.map(({ icon: Icon, title, text, href }, i) => (
+          <RevealItem key={title}>
+            <Link href={href} asChild>
+              <motion.a
+                className={cx(
+                  "group flex h-full items-start gap-4 py-7 transition-colors lg:px-8",
+                  i === 0 && "lg:pl-0",
+                  i === QUICK.length - 1 && "lg:pr-0",
+                  i > 0 && "lg:border-l lg:border-line",
+                )}
+                whileHover={{ y: -2 }}
+                transition={springy}
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center bg-brand-wash text-brand
+                                 transition-colors duration-300 group-hover:bg-brand group-hover:text-white">
+                  <Icon size={18} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[15px] font-semibold text-ink">{title}</span>
+                  <span className="mt-0.5 block text-[13px] leading-snug text-ink-soft">{text}</span>
+                </span>
+                <ChevronRight
+                  size={16}
+                  className="ml-auto mt-2.5 shrink-0 text-ink-faint transition-transform duration-300
+                             group-hover:translate-x-1 group-hover:text-brand"
+                />
+              </motion.a>
+            </Link>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+    </Section>
   );
 }
 
-/* ── Manifesto ───────────────────────────────────────────── */
+/* ── Promises ────────────────────────────────────────────── */
 
-function Manifesto() {
+function Promises() {
   return (
-    <section className="u-wrap pt-24">
+    <Section tone="sand">
       <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
         <Reveal>
-          <Kicker>Why this clinic exists</Kicker>
-          <h2 className="mt-6 text-[clamp(30px,4.4vw,52px)]">
-            Four decisions, not four slogans
-          </h2>
+          <Kicker>Why here</Kicker>
+          <h2 className="mt-6 text-[clamp(30px,4.2vw,48px)]">Four decisions, not four slogans</h2>
           <p className="mt-5 max-w-sm text-[16px] leading-[1.8] text-ink-soft">
-            Every one of these costs us slots or money. That is what makes them true rather
-            than marketing.
+            Each one costs us slots or money. That is what makes them true rather than marketing.
           </p>
         </Reveal>
 
@@ -265,7 +236,7 @@ function Manifesto() {
           {PROMISES.map((p, i) => (
             <RevealItem
               key={p.title}
-              className="group relative bg-surface p-8 transition-colors duration-300 hover:bg-white"
+              className="group relative bg-sand p-8 transition-colors duration-300 hover:bg-white"
             >
               <IndexNum n={i + 1} className="absolute right-6 top-5 text-[44px]" />
               <p.icon size={22} className="text-brand" />
@@ -275,40 +246,7 @@ function Manifesto() {
           ))}
         </RevealGroup>
       </div>
-    </section>
-  );
-}
-
-/* ── Numbers ─────────────────────────────────────────────── */
-
-function Numbers() {
-  return (
-    <section className="u-grain relative overflow-hidden bg-brand py-24 text-white">
-      <Logo size={520} tone="light" className="absolute -right-28 top-1/2 -translate-y-1/2 opacity-[0.04]" />
-      <div className="u-wrap relative z-10">
-        <Reveal className="max-w-xl">
-          <Kicker tone="text-mint" rule="bg-mint/40">By the numbers</Kicker>
-          <h2 className="mt-6 text-[clamp(28px,3.8vw,44px)] text-white">
-            Measured, not estimated
-          </h2>
-        </Reveal>
-
-        <RevealGroup className="mt-16 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" each={0.08}>
-          {STATS.map((s) => (
-            <RevealItem key={s.label}>
-              <RuleDraw tone="bg-white/20" />
-              <div className="pt-6">
-                <div className="font-display text-[clamp(40px,5.2vw,62px)] leading-none text-white">
-                  <CountUp value={s.value} suffix={s.suffix} />
-                </div>
-                <div className="mt-4 text-[14.5px] font-medium text-white/85">{s.label}</div>
-                <div className="mt-1 text-[13px] text-white/45">{s.note}</div>
-              </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      </div>
-    </section>
+    </Section>
   );
 }
 
@@ -316,99 +254,62 @@ function Numbers() {
 
 function Journey() {
   return (
-    <section className="u-wrap py-24">
+    <Section tone="surface">
       <Reveal className="max-w-2xl">
-        <Kicker>What to expect</Kicker>
-        <h2 className="mt-6 text-[clamp(30px,4.4vw,52px)]">A visit, start to finish</h2>
+        <Kicker>The visit</Kicker>
+        <h2 className="mt-6 text-[clamp(30px,4.2vw,48px)]">A visit, start to finish</h2>
         <p className="mt-5 text-[16.5px] leading-[1.8] text-ink-soft">
-          We publish the steps because knowing exactly what happens next is most of what makes a
-          first visit bearable.
+          Published because knowing exactly what happens next is most of what makes a first visit
+          bearable.
         </p>
       </Reveal>
 
-      {/* Four columns separated by hairlines that draw themselves in — the
-          magazine version of a process diagram. */}
-      <RevealGroup className="mt-16 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" each={0.1}>
+      <RevealGroup className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" each={0.1}>
         {JOURNEY.map((j) => (
           <RevealItem key={j.n}>
             <RuleDraw tone="bg-brand/25" />
             <div className="pt-6">
-              <span className="u-tnum font-display text-[15px] tracking-[0.1em] text-brand">
-                {j.n}
-              </span>
+              <span className="u-tnum font-display text-[15px] tracking-[0.1em] text-brand">{j.n}</span>
               <h3 className="mt-4 font-display text-[23px] leading-tight text-ink">{j.title}</h3>
               <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">{j.body}</p>
             </div>
           </RevealItem>
         ))}
       </RevealGroup>
-    </section>
+    </Section>
   );
 }
 
-/* ── Elite Passage ───────────────────────────────────────── */
+/* ── Numbers ─────────────────────────────────────────────── */
 
-function PassageStrip() {
+function Numbers() {
   return (
-    <section className="u-grain relative overflow-hidden bg-brand-deep py-24 text-white">
-      <div className="u-wrap relative z-10">
-        <div className="grid gap-14 lg:grid-cols-[1fr_1fr] lg:items-center">
-          <Reveal>
-            <Kicker tone="text-mint" rule="bg-mint/40">International patients</Kicker>
-            <h2 className="mt-7 text-[clamp(38px,6vw,76px)] leading-[0.98] text-white">
-              {PASSAGE.name}
-            </h2>
-            <p className="mt-5 font-display text-[clamp(19px,2.4vw,27px)] italic text-mint">
-              {PASSAGE.line}
-            </p>
-            <p className="mt-7 max-w-lg text-[16px] leading-[1.85] text-white/65">
-              {PASSAGE.lead}
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <ButtonLink href="/international" tone="white" size="lg">
-                See the programme <ArrowRight size={16} />
-              </ButtonLink>
-              <ButtonLink
-                href={BRAND.whatsappHref} tone="light" size="lg" external
-              >
-                <MessageCircle size={16} /> Send your reports
-              </ButtonLink>
+    <Section tone="navy">
+      <Logo
+        size={460}
+        tone="light"
+        className="absolute -right-24 top-1/2 -translate-y-1/2 opacity-[0.04]"
+      />
+      <Reveal className="max-w-xl">
+        <Kicker tone="text-gold" rule="bg-gold/40">By the numbers</Kicker>
+        <h2 className="mt-6 text-[clamp(28px,3.8vw,44px)] text-white">Measured, not estimated</h2>
+      </Reveal>
+
+      <RevealGroup className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4" each={0.08}>
+        {STATS.map((s) => (
+          <RevealItem key={s.label}>
+            <RuleDraw tone="bg-white/20" />
+            <div className="pt-6">
+              <div className="font-display text-[clamp(38px,5vw,58px)] leading-none text-white">
+                <CountUp value={s.value} suffix={s.suffix} />
+              </div>
+              <div className="mt-4 text-[14.5px] font-medium text-white/85">{s.label}</div>
+              <div className="mt-1 text-[13px] text-white/45">{s.note}</div>
             </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <ul className="grid gap-px bg-white/10 sm:grid-cols-2">
-              {[
-                { n: "01", t: "Flights & visa letter", s: "Booked around the treatment dates." },
-                { n: "02", t: "Met at arrivals", s: "Cairo International, inside the hall." },
-                { n: "03", t: "Hotel five minutes away", s: "Sheikh Zayed, companion included." },
-                { n: "04", t: "Days, not weeks", s: "Everything scheduled back to back." },
-              ].map((c) => (
-                <li key={c.n} className="bg-brand-deep p-7">
-                  <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-mint">
-                    {c.n}
-                  </span>
-                  <p className="mt-4 font-display text-[20px] text-white">{c.t}</p>
-                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-white/55">{c.s}</p>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-
-        <Reveal className="mt-16">
-          <RuleDraw tone="bg-white/15" />
-          <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/35">
-            Patients travel to this clinic from
-          </p>
-          <WordMarquee
-            words={PASSAGE_COUNTRIES}
-            className="mt-4"
-            itemClassName="font-display text-[clamp(22px,3vw,34px)] text-white/45"
-          />
-        </Reveal>
-      </div>
-    </section>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+    </Section>
   );
 }
 
@@ -416,34 +317,32 @@ function PassageStrip() {
 
 function Consultant() {
   return (
-    <section className="u-wrap py-24">
-      <div className="grid gap-14 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+    <Section tone="white">
+      <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center">
         <div>
-          <Reveal>
-            <Kicker>Your consultant</Kicker>
-          </Reveal>
+          <Reveal><Kicker>Your consultant</Kicker></Reveal>
           <SplitText
             text="You will know who you're seeing"
             as="h2"
-            className="mt-6 max-w-[14ch] text-[clamp(32px,4.8vw,58px)]"
+            className="mt-6 max-w-[14ch] text-[clamp(30px,4.2vw,52px)]"
           />
           <Reveal delay={0.1}>
             <div className="mt-8 flex max-w-xl items-start gap-5">
               <RuleDraw tone="bg-brand/30" className="mt-3 w-12 shrink-0" />
               <p className="text-[16.5px] leading-[1.85] text-ink-soft">
-                Follow-ups stay with the doctor who saw you first. Your file has one reader, your
-                plan has one author, and you never re-explain your history to a stranger.
+                Follow-ups stay with the man who saw you first. Your file has one reader, your plan
+                has one author, and you never repeat your history to a stranger.
               </p>
             </div>
           </Reveal>
-          <Reveal delay={0.16}>
+          <Reveal delay={0.18}>
             <div className="mt-9 flex flex-wrap gap-2.5">
               {["Andrology", "Male fertility", "Hormonal health", "General urology"].map((t) => (
                 <Pill key={t} tone="muted">{t}</Pill>
               ))}
             </div>
           </Reveal>
-          <Reveal delay={0.22}>
+          <Reveal delay={0.24}>
             <div className="mt-10 flex flex-wrap gap-3">
               <ButtonLink href="/doctor" tone="outline">About {BRAND.doctor}</ButtonLink>
               <ButtonLink href="/book"><CalendarCheck size={16} /> Book with him</ButtonLink>
@@ -451,42 +350,86 @@ function Consultant() {
           </Reveal>
         </div>
 
-        {/* A credentials card where the portrait used to be. The consultant's
-            name carries the section now, which is the honest version — his
-            record is the argument, not his photograph. */}
         <Reveal delay={0.08}>
-          <Drift amount={22}>
-            <div className="relative bg-brand p-9 text-white sm:p-11">
-              <span className="pointer-events-none absolute -inset-4 border border-brand/20" aria-hidden />
-              <Kicker tone="text-mint" rule="bg-mint/40">Your consultant</Kicker>
-              <p className="mt-6 font-display text-[clamp(28px,3.6vw,40px)] leading-[1.08]">
-                {BRAND.doctor}
-              </p>
-              <p className="mt-2 text-[14px] text-white/55">
-                Consultant andrologist &amp; urological surgeon
-              </p>
-
-              <ul className="mt-8 flex flex-col divide-y divide-white/12 border-t border-white/12">
-                {[
-                  ["~20", "years in men's health"],
-                  ["10,000+", "implant procedures"],
-                  ["1", "consultant, start to finish"],
-                ].map(([n, l]) => (
-                  <li key={l} className="flex items-baseline gap-4 py-4">
-                    <span className="u-tnum font-display text-[26px] leading-none text-mint">{n}</span>
-                    <span className="text-[14px] text-white/70">{l}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <p className="mt-6 text-[12px] leading-relaxed text-white/40">
-                Figures supplied by the clinic and not independently verified.
-              </p>
-            </div>
-          </Drift>
+          <div className="bg-brand p-9 text-white sm:p-10">
+            <Kicker tone="text-gold" rule="bg-gold/40">The record</Kicker>
+            <p className="mt-6 font-display text-[clamp(26px,3.2vw,36px)] leading-[1.1]">
+              {BRAND.doctor}
+            </p>
+            <p className="mt-2 text-[14px] text-white/55">
+              Consultant andrologist &amp; urological surgeon
+            </p>
+            <ul className="mt-8 flex flex-col divide-y divide-white/12 border-t border-white/12">
+              {[
+                ["~20", "years in men's health"],
+                ["10,000+", "implant procedures"],
+                ["1", "consultant, start to finish"],
+              ].map(([n, l]) => (
+                <li key={l} className="flex items-baseline gap-4 py-4">
+                  <span className="u-tnum font-display text-[26px] leading-none text-gold">{n}</span>
+                  <span className="text-[14px] text-white/70">{l}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 text-[12px] leading-relaxed text-white/40">
+              Figures supplied by the clinic and not independently verified.
+            </p>
+          </div>
         </Reveal>
       </div>
-    </section>
+    </Section>
+  );
+}
+
+/* ── Elite Passage ───────────────────────────────────────── */
+
+/**
+ * One band, not a section competing with the clinical work. It says what the
+ * programme is, proves it with four concrete things, and links out.
+ */
+function Passage() {
+  return (
+    <Section tone="navyDeep">
+      <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <Reveal>
+          <Kicker tone="text-gold" rule="bg-gold/40">
+            <span className="inline-flex items-center gap-2">
+              <Globe2 size={12} /> Coming from abroad
+            </span>
+          </Kicker>
+          <h2 className="mt-7 text-[clamp(30px,4.4vw,52px)] leading-[1.02] text-white">
+            {PASSAGE.name}
+          </h2>
+          <p className="mt-5 max-w-lg text-[16px] leading-[1.8] text-white/65">
+            Men fly in from across the Gulf, Africa and Europe. We handle the visa letter, the
+            flights, the airport, the hotel and the car &mdash; and compress the clinical work into
+            consecutive days, so the trip is as short as the medicine allows.
+          </p>
+          <div className="mt-9">
+            <ButtonLink href="/international" tone="white">
+              See the programme <ArrowRight size={16} />
+            </ButtonLink>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <ul className="grid gap-px bg-white/10 sm:grid-cols-2">
+            {[
+              { n: "01", t: "Reviewed before you fly", s: "Send your scans; get a plan and a fixed quote." },
+              { n: "02", t: "Visa letter & flights", s: "Issued and booked around the treatment dates." },
+              { n: "03", t: "Met at arrivals", s: "Cairo International, then a car for every visit." },
+              { n: "04", t: "Days, not weeks", s: "Everything scheduled back to back." },
+            ].map((c) => (
+              <li key={c.n} className="bg-brand-deep p-7">
+                <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-gold">{c.n}</span>
+                <p className="mt-4 font-display text-[19px] text-white">{c.t}</p>
+                <p className="mt-1.5 text-[13.5px] leading-relaxed text-white/55">{c.s}</p>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
+    </Section>
   );
 }
 
@@ -494,43 +437,39 @@ function Consultant() {
 
 function Voices() {
   return (
-    <section className="bg-sand py-24">
-      <div className="u-wrap">
-        <Reveal className="max-w-2xl">
-          <Kicker>In their words</Kicker>
-          <h2 className="mt-6 text-[clamp(30px,4.4vw,52px)]">What patients say afterwards</h2>
-          <p className="mt-5 text-[16.5px] leading-[1.8] text-ink-soft">
-            Published only from patients with a completed visit. Initials unless someone asks
-            otherwise.
-          </p>
-        </Reveal>
+    <Section tone="sand">
+      <Reveal className="max-w-2xl">
+        <Kicker>In their words</Kicker>
+        <h2 className="mt-6 text-[clamp(30px,4.2vw,48px)]">What men say afterwards</h2>
+        <p className="mt-5 text-[16.5px] leading-[1.8] text-ink-soft">
+          Published only from patients with a completed visit. Initials unless someone asks
+          otherwise.
+        </p>
+      </Reveal>
 
-        <RevealGroup className="mt-16 grid gap-px bg-line md:grid-cols-3">
-          {REVIEWS.map((r) => (
-            <RevealItem key={r.id} className="flex flex-col bg-sand p-8">
-              <Quote size={24} className="text-brand/25" />
-              <p className="mt-5 flex-1 font-display text-[19px] leading-[1.55] text-ink">
-                {r.body}
-              </p>
-              <div className="mt-7 flex items-center gap-3 border-t border-line pt-5">
-                <span className={cx(
-                  "grid h-10 w-10 place-items-center text-[12px] font-semibold",
-                  r.accent === "brand" ? "bg-brand-wash text-brand"
-                    : r.accent === "mint" ? "bg-mint-wash text-mint" : "bg-coral-wash text-coral",
-                )}>
-                  {r.initials}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[13.5px] font-semibold text-ink">{r.name}</p>
-                  <p className="text-[12px] text-ink-faint">{r.context}</p>
-                </div>
-                <Stars rating={r.rating} size={12} />
+      <RevealGroup className="mt-14 grid gap-px bg-line md:grid-cols-3">
+        {REVIEWS.map((r) => (
+          <RevealItem key={r.id} className="flex flex-col bg-sand p-8">
+            <Quote size={22} className="text-brand/25" />
+            <p className="mt-5 flex-1 font-display text-[19px] leading-[1.55] text-ink">{r.body}</p>
+            <div className="mt-7 flex items-center gap-3 border-t border-line pt-5">
+              <span className={cx(
+                "grid h-10 w-10 place-items-center text-[12px] font-semibold",
+                r.accent === "brand" ? "bg-brand-wash text-brand"
+                  : r.accent === "gold" ? "bg-gold-wash text-gold-deep" : "bg-coral-wash text-coral",
+              )}>
+                {r.initials}
+              </span>
+              <div className="min-w-0">
+                <p className="text-[13.5px] font-semibold text-ink">{r.name}</p>
+                <p className="text-[12px] text-ink-faint">{r.context}</p>
               </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      </div>
-    </section>
+              <Stars rating={r.rating} size={12} />
+            </div>
+          </RevealItem>
+        ))}
+      </RevealGroup>
+    </Section>
   );
 }
 
@@ -538,11 +477,11 @@ function Voices() {
 
 function JournalStrip() {
   return (
-    <section className="u-wrap py-24">
+    <Section tone="surface">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <Reveal>
           <Kicker>Journal</Kicker>
-          <h2 className="mt-6 max-w-[16ch] text-[clamp(30px,4.4vw,52px)]">
+          <h2 className="mt-6 max-w-[16ch] text-[clamp(30px,4.2vw,48px)]">
             Written by the clinic, not by an agency
           </h2>
         </Reveal>
@@ -582,7 +521,7 @@ function JournalStrip() {
           </RevealItem>
         ))}
       </RevealGroup>
-    </section>
+    </Section>
   );
 }
 
@@ -590,12 +529,12 @@ function JournalStrip() {
 
 function TwoDoors() {
   return (
-    <section className="u-wrap pb-24">
+    <Section tone="surface" innerClassName="pt-0 pb-20 sm:pb-24">
       <RevealGroup className="grid gap-px bg-line lg:grid-cols-2">
-        <RevealItem className="u-grain relative overflow-hidden bg-brand p-10 text-white sm:p-14">
-          <Logo size={160} tone="light" className="absolute -right-10 -top-10 opacity-[0.08]" />
-          <Kicker tone="text-mint" rule="bg-mint/40">New patient</Kicker>
-          <h2 className="mt-7 max-w-[14ch] text-[clamp(28px,3.4vw,42px)] text-white">
+        <RevealItem className="u-grain relative overflow-hidden bg-brand p-10 text-white sm:p-12">
+          <Logo size={150} tone="light" className="absolute -right-10 -top-10 opacity-[0.08]" />
+          <Kicker tone="text-gold" rule="bg-gold/40">New patient</Kicker>
+          <h2 className="mt-7 max-w-[14ch] text-[clamp(26px,3.2vw,38px)] text-white">
             Book without picking up the phone
           </h2>
           <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-white/65">
@@ -607,13 +546,13 @@ function TwoDoors() {
           </ButtonLink>
         </RevealItem>
 
-        <RevealItem className="bg-surface p-10 sm:p-14">
+        <RevealItem className="bg-white p-10 sm:p-12">
           <Kicker>Returning</Kicker>
-          <h2 className="mt-7 max-w-[14ch] text-[clamp(28px,3.4vw,42px)]">
+          <h2 className="mt-7 max-w-[14ch] text-[clamp(26px,3.2vw,38px)]">
             Everything from your last visit, waiting
           </h2>
           <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-ink-soft">
-            Scans, blood results, prescriptions and your written plan — in one place, on any
+            Scans, blood results, prescriptions and your written plan &mdash; in one place, on any
             device, with discreet mode on by default.
           </p>
           <ButtonLink href="/portal" tone="outline" size="lg" className="mt-9">
@@ -621,6 +560,6 @@ function TwoDoors() {
           </ButtonLink>
         </RevealItem>
       </RevealGroup>
-    </section>
+    </Section>
   );
 }

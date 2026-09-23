@@ -25,10 +25,12 @@ import { ArrowRight, Clock, Wallet } from "lucide-react";
 import { SERVICES } from "@/data/clinic";
 import { soft, springy } from "@/lib/motion";
 import { Reveal, cx } from "@/components/ui";
+import { Section } from "@/components/Section";
+import { Kicker } from "@/components/editorial";
 
 const ACCENT = {
   brand: "bg-brand-wash text-brand",
-  mint: "bg-mint-wash text-mint",
+  gold: "bg-gold-wash text-gold-deep-deep",
   coral: "bg-coral-wash text-coral",
 } as const;
 
@@ -55,10 +57,10 @@ export function ServiceExplorer() {
   }
 
   return (
-    <section className="u-aurora relative py-24">
-      <div className="u-wrap relative z-10">
+    <Section tone="white" className="u-aurora">
+      <>
         <Reveal className="max-w-2xl">
-          <p className="u-eyebrow mb-3">What we treat</p>
+          <Kicker className="mb-6">What we treat</Kicker>
           <h2 className="text-[clamp(30px,4.6vw,50px)]">Six areas, one consultant</h2>
           <p className="mt-4 text-[16.5px] leading-[1.75] text-ink-soft">
             Imaging and laboratory sit on the same floor as the consulting rooms. An
@@ -210,7 +212,7 @@ export function ServiceExplorer() {
             </div>
           </div>
         </Reveal>
-      </div>
-    </section>
+      </>
+    </Section>
   );
 }

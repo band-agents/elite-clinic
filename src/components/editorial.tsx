@@ -280,7 +280,7 @@ export function CountUp({
 /* ── Live dot ────────────────────────────────────────────── */
 
 /** A small pinging dot for status pills. Mint by default. */
-export function LiveDot({ className = "bg-mint" }: { className?: string }) {
+export function LiveDot({ className = "bg-gold" }: { className?: string }) {
   return (
     <span className="relative flex h-1.5 w-1.5" aria-hidden>
       <span className={cx("absolute inline-flex h-full w-full animate-ping rounded-full opacity-70", className)} />

@@ -34,7 +34,7 @@ export interface Service {
   priceEgp: number;
   /** Anything to do before arriving. Empty array renders nothing. */
   prep: string[];
-  accent: "brand" | "mint" | "coral";
+  accent: "brand" | "gold" | "coral";
 }
 
 export const SERVICES: Service[] = [
@@ -105,7 +105,7 @@ export const SERVICES: Service[] = [
       "Two to five days of abstinence before a semen analysis — no more, no less.",
       "Avoid alcohol for 48 hours before the sample.",
     ],
-    accent: "mint",
+    accent: "gold",
   },
   {
     id: "hormones",
@@ -172,7 +172,7 @@ export const SERVICES: Service[] = [
     durationMin: 180,
     priceEgp: 9500,
     prep: ["Fast for 10–12 hours. Water is fine.", "Allow a half-day — this is not a short visit."],
-    accent: "mint",
+    accent: "gold",
   },
 ];
 
@@ -213,7 +213,7 @@ export interface Doctor {
   title: string;
   focus: string;
   initials: string;
-  accent: "brand" | "mint" | "coral";
+  accent: "brand" | "gold" | "coral";
   /** Weekdays as short labels, matching the booking calendar. */
   days: string[];
   serviceIds: string[];
@@ -264,7 +264,7 @@ export const DOCTORS: Doctor[] = [
     title: "Consultant Urologist",
     focus: "General urology, stones and prostate health",
     initials: "—",
-    accent: "mint",
+    accent: "gold",
     days: ["Sun", "Tue", "Thu"],
     serviceIds: ["urology", "screening", "consultation"],
   },
@@ -367,7 +367,7 @@ export interface Review {
   context: string;
   rating: number;
   body: string;
-  accent: "brand" | "mint" | "coral";
+  accent: "brand" | "gold" | "coral";
 }
 
 export const REVIEWS: Review[] = [
@@ -391,7 +391,7 @@ export const REVIEWS: Review[] = [
     body:
       "[PLACEHOLDER] Everything in one morning — bloods, ultrasound, ECG — and one doctor who read " +
       "all of it together instead of handing me three envelopes.",
-    accent: "mint",
+    accent: "gold",
   },
   {
     id: "r3",
@@ -417,7 +417,7 @@ export interface Article {
   excerpt: string;
   /** Body paragraphs. A heading is any paragraph prefixed with "## ". */
   body: string[];
-  accent: "brand" | "mint" | "coral";
+  accent: "brand" | "gold" | "coral";
 }
 
 export const ARTICLES: Article[] = [
@@ -448,7 +448,7 @@ export const ARTICLES: Article[] = [
     date: "2026-08-21",
     excerpt:
       "A full male workup is one visit and one lab run. It changes the plan for the couple more often than anyone expects.",
-    accent: "mint",
+    accent: "gold",
     body: [
       "[PLACEHOLDER ARTICLE — clinical content must be written or approved by Dr. Osama before publication.]",
       "## The asymmetry",

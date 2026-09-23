@@ -60,7 +60,7 @@ export function ArticlePage() {
                 <p className="text-[14px] font-semibold text-ink">
                   Reviewed by {BRAND.doctor}
                 </p>
-                <p className="flex items-center gap-1.5 text-[12.5px] text-mint">
+                <p className="flex items-center gap-1.5 text-[12.5px] text-gold-deep">
                   <ShieldCheck size={13} /> Clinically reviewed ·{" "}
                   <span className="u-tnum text-ink-faint">
                     {new Date(article.date).toLocaleDateString("en-GB", {

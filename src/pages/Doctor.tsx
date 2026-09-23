@@ -42,7 +42,7 @@ export function Doctor() {
               sexual-health page mostly serves the clinic, not the patient. */}
           <Reveal>
             <div className="bg-brand p-9 text-white sm:p-11">
-              <Kicker tone="text-mint" rule="bg-mint/40">The record</Kicker>
+              <Kicker tone="text-gold" rule="bg-gold/40">The record</Kicker>
               <ul className="mt-8 flex flex-col divide-y divide-white/12 border-t border-white/12">
                 {[
                   ["~20", "years in men's health"],
@@ -51,7 +51,7 @@ export function Doctor() {
                   ["40", "minutes, every consultation"],
                 ].map(([n, l]) => (
                   <li key={l} className="flex items-baseline gap-4 py-4">
-                    <span className="u-tnum font-display text-[28px] leading-none text-mint">{n}</span>
+                    <span className="u-tnum font-display text-[28px] leading-none text-gold">{n}</span>
                     <span className="text-[14.5px] text-white/70">{l}</span>
                   </li>
                 ))}
@@ -103,7 +103,7 @@ export function Doctor() {
               <ul className="mt-6 flex flex-col gap-3">
                 {lead.credentials?.map((c) => (
                   <li key={c} className="flex items-start gap-3 text-[15px] text-ink-soft">
-                    <span className="mt-1 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-mint-wash text-mint">
+                    <span className="mt-1 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-gold-wash text-gold-deep-deep">
                       <Check size={11} strokeWidth={3} />
                     </span>
                     {c}

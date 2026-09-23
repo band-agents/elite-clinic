@@ -172,7 +172,7 @@ function SignIn({ onDone }: { onDone: () => void }) {
           </div>
 
           <div className="mt-10 flex items-start gap-3 rounded-2xl border border-line bg-white p-5">
-            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-mint" />
+            <ShieldCheck size={18} className="mt-0.5 shrink-0 text-gold-deep" />
             <p className="text-[13px] leading-relaxed text-ink-soft">
               Discreet mode is on by default: service names and diagnoses stay blurred on screen
               until you tap them.
@@ -225,7 +225,7 @@ function PortalHeader({
             className={cx(
               "inline-flex h-10 items-center gap-2 rounded-full border px-4 text-[13px] font-semibold transition-colors",
               discreet
-                ? "border-mint/40 bg-mint-wash text-mint"
+                ? "border-gold/40 bg-gold-wash text-gold-deep-deep"
                 : "border-line bg-white text-ink-soft hover:border-brand/40",
             )}
             aria-pressed={discreet}
@@ -346,7 +346,7 @@ const KIND_ICON = {
 } as const;
 
 const KIND_TONE = {
-  lab: "bg-mint-wash text-mint",
+  lab: "bg-gold-wash text-gold-deep-deep",
   imaging: "bg-brand-wash text-brand",
   report: "bg-sand text-ink-soft",
   prescription: "bg-coral-wash text-coral",
@@ -355,13 +355,13 @@ const KIND_TONE = {
 } as const;
 
 const STATUS_TONE = {
-  ready: "bg-mint-wash text-mint",
+  ready: "bg-gold-wash text-gold-deep-deep",
   reviewed: "bg-black/5 text-ink-soft",
   pending: "bg-coral-wash text-coral",
-  confirmed: "bg-mint-wash text-mint",
+  confirmed: "bg-gold-wash text-gold-deep-deep",
   completed: "bg-black/5 text-ink-soft",
   cancelled: "bg-coral-wash text-coral",
-  paid: "bg-mint-wash text-mint",
+  paid: "bg-gold-wash text-gold-deep-deep",
   unpaid: "bg-coral-wash text-coral",
 } as const;
 
@@ -984,11 +984,11 @@ function RangeBar({ analyte }: { analyte: Analyte }) {
   return (
     <div className="ml-auto w-[88px]" aria-hidden>
       <div className="relative h-1.5 rounded-full bg-line">
-        <span className="absolute inset-y-0 left-[20%] right-[20%] rounded-full bg-mint/35" />
+        <span className="absolute inset-y-0 left-[20%] right-[20%] rounded-full bg-gold/35" />
         <span
           className={cx(
             "absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-white",
-            flag ? "bg-coral" : "bg-mint",
+            flag ? "bg-coral" : "bg-gold",
           )}
           style={{ left: `${pos}%` }}
         />
@@ -1002,7 +1002,7 @@ function RangeBar({ analyte }: { analyte: Analyte }) {
 const HISTORY_TONE = {
   visit: "bg-brand-wash text-brand",
   diagnosis: "bg-coral-wash text-coral",
-  procedure: "bg-mint-wash text-mint",
+  procedure: "bg-gold-wash text-gold-deep-deep",
   prescription: "bg-sand text-ink-soft",
   result: "bg-brand-wash text-brand",
 } as const;
@@ -1183,7 +1183,7 @@ function Settings({
           </span>
           <span className={cx(
             "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-            discreet ? "bg-mint" : "bg-line",
+            discreet ? "bg-gold" : "bg-line",
           )}>
             <motion.span
               layout

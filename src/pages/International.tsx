@@ -84,7 +84,7 @@ function PassageHero() {
         />
 
         <motion.p
-          className="mt-5 font-display text-[clamp(20px,2.8vw,32px)] italic text-mint"
+          className="mt-5 font-display text-[clamp(20px,2.8vw,32px)] italic text-gold"
           variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }}
           transition={soft(0.85)}
         >
@@ -151,7 +151,7 @@ function Included() {
           <RevealGroup className="mt-10 grid gap-x-8 gap-y-3 sm:grid-cols-2" each={0.04}>
             {PASSAGE_INCLUDED.map((item) => (
               <RevealItem key={item} className="flex gap-3">
-                <span className="mt-1 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-mint-wash text-mint">
+                <span className="mt-1 grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full bg-gold-wash text-gold-deep-deep">
                   <Check size={11} strokeWidth={3} />
                 </span>
                 <span className="text-[14.5px] leading-relaxed text-ink-soft">{item}</span>
@@ -234,7 +234,7 @@ function Timeline() {
 
 const TIER_ACCENT = {
   brand: "bg-brand-wash text-brand",
-  mint: "bg-mint-wash text-mint",
+  gold: "bg-gold-wash text-gold-deep-deep",
   coral: "bg-coral-wash text-coral",
 } as const;
 
@@ -260,7 +260,7 @@ function Tiers() {
             )}
           >
             {t.featured && (
-              <span className="absolute -top-3 left-8 rounded-full bg-mint px-4 py-1 text-[11px] font-semibold text-white">
+              <span className="absolute -top-3 left-8 rounded-full bg-gold px-4 py-1 text-[11px] font-semibold text-white">
                 Most chosen
               </span>
             )}
@@ -313,7 +313,7 @@ function Tiers() {
                 <li key={f} className="flex gap-3">
                   <span className={cx(
                     "mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full",
-                    t.featured ? "bg-white/15 text-white" : "bg-mint-wash text-mint",
+                    t.featured ? "bg-white/15 text-white" : "bg-gold-wash text-gold-deep-deep",
                   )}>
                     <Check size={10} strokeWidth={3} />
                   </span>
@@ -382,7 +382,7 @@ function Enquiry() {
 
       <div className="u-wrap relative z-10 grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
         <Reveal>
-          <Kicker tone="text-mint" rule="bg-mint/40" className="mb-7">Step one</Kicker>
+          <Kicker tone="text-gold" rule="bg-gold/40" className="mb-7">Step one</Kicker>
           <h2 className="text-[clamp(30px,4.4vw,48px)] text-white">
             Send your reports before you spend anything
           </h2>
@@ -400,7 +400,7 @@ function Enquiry() {
               "No obligation, and nothing charged for the review",
             ].map((t) => (
               <li key={t} className="flex items-center gap-3 text-[14.5px] text-white/75">
-                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/12 text-mint">
+                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-white/12 text-gold">
                   <Check size={11} strokeWidth={3} />
                 </span>
                 {t}
@@ -421,7 +421,7 @@ function Enquiry() {
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={springy}
-                className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-mint text-white"
+                className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gold text-white"
               >
                 <Check size={26} strokeWidth={2.5} />
               </motion.span>

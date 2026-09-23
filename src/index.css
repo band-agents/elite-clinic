@@ -2,7 +2,7 @@
    Public site.
 
    The palette is the Al-Madinah system carried over intact — same ink ramp,
-   same mint and coral accents, same surface and line, same utilities — with
+   same gold and coral accents, same surface and line, same utilities — with
    one substitution: the clinical blue (208 84% 32%) is replaced by the
    clinic's own navy, #0E2A47 = hsl(211 67% 17%). Navy is darker than the blue
    it replaces, so `brand-lift` carries the jobs that need a lighter tone
@@ -27,8 +27,12 @@
   --color-brand-lift: hsl(208 58% 40%);
   --color-brand-wash: hsl(210 48% 95%);
 
-  --color-mint: hsl(168 62% 40%);
-  --color-mint-wash: hsl(168 52% 94%);
+  /* Was a turquoise mint carried over from the hospital palette. The clinic
+     asked for it gone; this is the gold from their own brand board, #C7A86E,
+     which is what navy was always meant to sit beside. */
+  --color-gold: hsl(38 45% 60%);
+  --color-gold-wash: hsl(38 56% 95%);
+  --color-gold-deep: hsl(38 42% 44%);
   --color-coral: hsl(6 78% 62%);
   --color-coral-wash: hsl(6 80% 96%);
   --color-sand: hsl(38 62% 96%);
@@ -130,7 +134,7 @@
   }
   .u-aurora::after {
     width: 38vw; height: 38vw; max-width: 520px; max-height: 520px;
-    background: radial-gradient(circle, var(--color-mint-wash), transparent 68%);
+    background: radial-gradient(circle, var(--color-gold-wash), transparent 68%);
     bottom: -18%; inset-inline-end: -8%;
   }
 

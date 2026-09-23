@@ -15,7 +15,7 @@ import { PageHead } from "@/components/PageHead";
 
 const ACCENT = {
   brand: "bg-brand-wash text-brand",
-  mint: "bg-mint-wash text-mint",
+  gold: "bg-gold-wash text-gold-deep-deep",
   coral: "bg-coral-wash text-coral",
 } as const;
 

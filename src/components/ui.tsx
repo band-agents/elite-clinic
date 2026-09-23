@@ -77,13 +77,13 @@ export function RevealItem({
 
 /* ── Buttons ─────────────────────────────────────────────── */
 
-type ButtonTone = "primary" | "ghost" | "outline" | "light" | "white" | "coral" | "mint";
+type ButtonTone = "primary" | "ghost" | "outline" | "light" | "white" | "coral" | "gold";
 type ButtonSize = "sm" | "md" | "lg";
 
 const TONE: Record<ButtonTone, string> = {
   primary: "bg-brand text-white hover:bg-brand-deep shadow-[0_10px_28px_-14px] shadow-brand/70",
   coral: "bg-coral text-white hover:brightness-95 shadow-[0_10px_28px_-14px] shadow-coral/70",
-  mint: "bg-mint text-white hover:brightness-95 shadow-[0_10px_28px_-14px] shadow-mint/70",
+  gold: "bg-gold text-white hover:brightness-95 shadow-[0_10px_28px_-14px] shadow-gold/70",
   outline: "border border-brand/25 text-brand hover:bg-brand-wash",
   ghost: "text-ink-soft hover:text-brand hover:bg-brand-wash/60",
   light: "bg-white/12 text-white border border-white/25 hover:bg-white/20 backdrop-blur-sm",
@@ -167,11 +167,11 @@ export function ButtonLink({
 export function Pill({
   children, tone = "brand", className,
 }: {
-  children: ReactNode; tone?: "brand" | "mint" | "coral" | "muted" | "light"; className?: string;
+  children: ReactNode; tone?: "brand" | "gold" | "coral" | "muted" | "light"; className?: string;
 }) {
   const tones = {
     brand: "bg-brand-wash text-brand",
-    mint: "bg-mint-wash text-mint",
+    gold: "bg-gold-wash text-gold-deep-deep",
     coral: "bg-coral-wash text-coral",
     muted: "bg-black/5 text-ink-soft",
     light: "bg-white/12 text-white border border-white/20",
@@ -382,14 +382,14 @@ export function ChoiceCard({
 
 const ACCENT_BG = {
   brand: "bg-brand text-white",
-  mint: "bg-mint text-white",
+  gold: "bg-gold text-white",
   coral: "bg-coral text-white",
 } as const;
 
 export function Avatar({
   initials, accent = "brand", size = 56, className,
 }: {
-  initials: string; accent?: "brand" | "mint" | "coral"; size?: number; className?: string;
+  initials: string; accent?: "brand" | "gold" | "coral"; size?: number; className?: string;
 }) {
   return (
     <span

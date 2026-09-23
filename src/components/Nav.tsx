@@ -118,7 +118,7 @@ export function Nav() {
               "hidden h-10 items-center gap-2 rounded-full px-4 text-[13.5px] font-medium transition-colors md:inline-flex",
               light
                 ? "text-white/70 hover:bg-white/10 hover:text-white"
-                : "text-ink-soft hover:bg-mint-wash hover:text-mint",
+                : "text-ink-soft hover:bg-gold-wash hover:text-gold-deep",
             )}
           >
             <MessageCircle size={15} /> Ask privately

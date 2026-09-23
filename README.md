@@ -54,9 +54,10 @@ npm run typecheck   # types only
 
 ### Deploying
 
-**Live on GitHub Pages:**
+**Live on GitHub Pages — two versions of the site, one source:**
 
-- Website — <https://band-agents.github.io/elite-clinic/>
+- Website, no photograph — <https://band-agents.github.io/elite-clinic/>
+- Website, with the portrait — <https://band-agents.github.io/elite-clinic/with-photo/>
 - Patient app — <https://band-agents.github.io/elite-clinic/prototype/elite-clinic-patient-app.html>
 - Clinic app — <https://band-agents.github.io/elite-clinic/prototype/elite-clinic-app.html>
 
@@ -64,9 +65,12 @@ npm run typecheck   # types only
 npm run deploy:pages
 ```
 
-That builds with `VITE_BASE=/elite-clinic/`, writes a `404.html` copy of the
-shell so client-side routes survive a direct hit, and force-pushes `dist` to
-the `gh-pages` branch.
+That builds twice — once plain and once with `VITE_HERO_PHOTO=1` — writes a
+`404.html` copy of the shell so client-side routes survive a direct hit, and
+force-pushes both into `gh-pages`. Each needs its own Vite base, which is why
+they are separate builds rather than one copied twice: asset URLs are baked in.
+
+Only the hero differs between them. Everything else is the same components.
 
 **Do not set `VITE_BASE` on a Git Bash command line.** MSYS rewrites anything
 shaped like a Unix path, so `/elite-clinic/` becomes
