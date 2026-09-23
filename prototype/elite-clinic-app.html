@@ -1,0 +1,1908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elite Clinic — Clinic App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Elite Clinic — the clinic's own mobile app, as one working
+   device. Not a gallery of screens: a single iPhone you can
+   actually drive. Tabs switch, headers push and pop with a real
+   back stack, the menu slides over, sheets slide up, and the
+   booking flow runs start to finish to a confirmation.
+
+   Palette, type and button shapes are the website's, unchanged.
+   Self-contained: no build, no framework, no network beyond the
+   two web fonts. All data is invented.
+   ============================================================ */
+
+:root{
+  --ink:hsl(212 42% 14%);
+  --ink-soft:hsl(212 20% 38%);
+  --ink-faint:hsl(212 14% 55%);
+
+  --navy:hsl(211 67% 17%);
+  --navy-deep:hsl(211 74% 11%);
+  --navy-lift:hsl(208 58% 40%);
+  --navy-wash:hsl(210 48% 95%);
+
+  --mint:hsl(168 62% 40%);
+  --mint-wash:hsl(168 52% 94%);
+  --coral:hsl(6 78% 62%);
+  --coral-wash:hsl(6 80% 96%);
+  --sand:hsl(38 62% 96%);
+
+  --surface:hsl(208 38% 98%);
+  --line:hsl(208 24% 89%);
+
+  --sans:"IBM Plex Sans Arabic",ui-sans-serif,system-ui,sans-serif;
+  --display:"Fraunces","IBM Plex Sans Arabic",Georgia,serif;
+  --ease:cubic-bezier(.32,.72,0,1);
+
+  --w:402px;
+  --h:874px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  min-height:100vh;background:
+    radial-gradient(60% 50% at 20% 10%, hsl(210 40% 96%) 0%, transparent 60%),
+    radial-gradient(50% 50% at 85% 85%, hsl(168 30% 96%) 0%, transparent 60%),
+    hsl(208 30% 94%);
+  color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;
+  display:flex;align-items:center;justify-content:center;gap:clamp(24px,5vw,72px);
+  padding:40px 20px;flex-wrap:wrap;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+:focus-visible{outline:2px solid var(--navy-lift);outline-offset:2px}
+
+/* ── Side note ───────────────────────────────────────────── */
+.aside{max-width:330px}
+.aside .brand{display:flex;align-items:center;gap:11px;margin-bottom:26px}
+.aside .brand svg{width:44px;height:44px}
+.aside .brand b{font-family:var(--display);font-size:22px;font-weight:500;color:var(--navy);display:block;line-height:1}
+.aside .brand span{font-size:9.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.aside h1{font-family:var(--display);font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-.02em}
+.aside p{color:var(--ink-soft);font-size:14px;margin-top:12px}
+.aside ul{margin-top:22px;list-style:none;display:flex;flex-direction:column;gap:9px}
+.aside li{display:flex;gap:10px;font-size:13.5px;color:var(--ink-soft);align-items:flex-start}
+.aside li b{color:var(--ink);font-weight:600}
+.aside .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);margin-top:8px;flex:none}
+.aside .warn{margin-top:26px;padding:15px 17px;border-radius:18px;background:#fff;border:1px solid var(--line);font-size:12.5px;color:var(--ink-soft)}
+.aside .warn b{color:var(--ink)}
+
+/* ── The device ──────────────────────────────────────────── */
+.device{
+  width:var(--w);height:var(--h);flex:none;position:relative;
+  border-radius:56px;padding:11px;
+  background:linear-gradient(160deg,#5c6470 0%,#2b3138 22%,#42484f 50%,#1d2126 78%,#4a5158 100%);
+  box-shadow:
+    0 60px 110px -50px rgba(14,42,71,.75),
+    0 0 0 1px rgba(0,0,0,.25),
+    inset 0 0 0 2px rgba(255,255,255,.1);
+}
+/* side buttons */
+.device::before,.device::after{
+  content:"";position:absolute;width:3px;border-radius:3px;
+  background:linear-gradient(180deg,#4a5158,#2b3138);
+}
+.device::before{left:-3px;top:150px;height:64px;box-shadow:0 88px 0 #3a4048, 0 -56px 0 #3a4048;}
+.device::after{right:-3px;top:180px;height:96px;}
+
+.viewport{
+  position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;
+  background:var(--surface);isolation:isolate;
+}
+
+/* Dynamic Island */
+.island{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:126px;height:36px;border-radius:20px;background:#000;z-index:120;
+}
+.island::after{
+  content:"";position:absolute;right:11px;top:11px;width:9px;height:9px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #2a3a52, #04080f 70%);
+}
+
+/* Status bar */
+.status{
+  position:absolute;top:0;left:0;right:0;height:56px;z-index:110;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 30px 0;font-size:14px;font-weight:600;
+  font-variant-numeric:tabular-nums;pointer-events:none;
+  color:var(--ink);transition:color .3s;
+}
+.viewport[data-chrome="dark"] .status{color:#fff}
+.status .right{display:flex;align-items:center;gap:6px}
+.status .batt{width:23px;height:12px;border:1.5px solid currentColor;border-radius:4px;position:relative;opacity:.85}
+.status .batt::before{content:"";position:absolute;inset:2px;right:6px;background:currentColor;border-radius:1.5px}
+.status .batt::after{content:"";position:absolute;right:-4px;top:3.5px;width:2px;height:5px;background:currentColor;border-radius:0 2px 2px 0;opacity:.6}
+
+/* Home indicator */
+.home-bar{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  width:140px;height:5px;border-radius:99px;background:var(--ink);opacity:.28;z-index:115;pointer-events:none;
+  transition:background .3s;
+}
+.viewport[data-chrome="dark"] .home-bar{background:#fff;opacity:.4}
+
+/* ── Screen stack ────────────────────────────────────────── */
+.stack{position:absolute;inset:0;z-index:10}
+.screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  background:var(--surface);will-change:transform,opacity;
+}
+.screen.push-in{animation:pushIn .42s var(--ease) both}
+.screen.push-out{animation:pushOut .42s var(--ease) both}
+.screen.pop-in{animation:popIn .42s var(--ease) both}
+.screen.pop-out{animation:popOut .42s var(--ease) both}
+.screen.fade-in{animation:fadeIn .3s var(--ease) both}
+.screen.fade-out{animation:fadeOut .3s var(--ease) both}
+@keyframes pushIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes pushOut{from{transform:translateX(0)}to{transform:translateX(-26%);filter:brightness(.92)}}
+@keyframes popIn{from{transform:translateX(-26%);filter:brightness(.92)}to{transform:translateX(0);filter:none}}
+@keyframes popOut{from{transform:translateX(0)}to{transform:translateX(100%)}}
+@keyframes fadeIn{from{opacity:0;transform:scale(.99)}to{opacity:1;transform:none}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+
+/* ── Screen chrome ───────────────────────────────────────── */
+.nav{flex:none;padding:58px 20px 10px;display:flex;align-items:center;gap:12px}
+.nav.on-navy{background:var(--navy);color:#fff;padding-bottom:18px}
+.nav h1{font-family:var(--display);font-weight:500;font-size:26px;letter-spacing:-.02em;line-height:1.12}
+.nav .sub{font-size:12px;color:var(--ink-faint);margin-top:2px}
+.nav.on-navy .sub{color:rgba(255,255,255,.55)}
+.nav .grow{flex:1;min-width:0}
+.nav .acts{display:flex;gap:8px;flex:none}
+
+.rnd{
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
+  border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+  transition:transform .12s,background .2s;
+}
+.rnd:active{transform:scale(.9)}
+.nav.on-navy .rnd{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff}
+
+.body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 20px 26px;scrollbar-width:none}
+.body::-webkit-scrollbar{display:none}
+.body.flush{padding-left:0;padding-right:0}
+.body.with-tabs{padding-bottom:104px}
+.body.with-cta{padding-bottom:110px}
+
+/* ── Tab bar ─────────────────────────────────────────────── */
+.tabs{
+  position:absolute;left:0;right:0;bottom:0;z-index:60;height:88px;
+  display:flex;justify-content:space-around;align-items:flex-start;padding:10px 6px 0;
+  background:rgba(255,255,255,.82);backdrop-filter:blur(22px) saturate(1.6);
+  border-top:1px solid var(--line);
+}
+.tabs button{
+  display:flex;flex-direction:column;align-items:center;gap:4px;width:68px;
+  color:var(--ink-faint);font-size:10px;font-weight:600;padding-top:6px;
+  transition:color .2s,transform .12s;
+}
+.tabs button:active{transform:scale(.92)}
+.tabs button[aria-current="true"]{color:var(--navy)}
+.tabs .wrap{position:relative;display:grid;place-items:center;height:26px}
+.tabs .badge{
+  position:absolute;top:-2px;right:-8px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:99px;background:var(--coral);color:#fff;font-size:9.5px;font-weight:700;
+  display:grid;place-items:center;border:2px solid #fff;
+}
+
+/* ── Sticky CTA ──────────────────────────────────────────── */
+.cta-bar{
+  position:absolute;left:0;right:0;bottom:0;z-index:55;padding:14px 20px 30px;
+  background:linear-gradient(transparent, #fff 26%);
+}
+
+/* ── Drawer ──────────────────────────────────────────────── */
+.scrim{
+  position:absolute;inset:0;z-index:90;background:rgba(7,20,35,.45);
+  backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .34s var(--ease);
+}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:absolute;top:0;bottom:0;left:0;width:82%;z-index:95;
+  background:var(--navy);color:#fff;transform:translateX(-102%);
+  transition:transform .42s var(--ease);
+  display:flex;flex-direction:column;padding:58px 22px 20px;
+  box-shadow:24px 0 60px -30px rgba(0,0,0,.6);
+}
+.drawer.on{transform:translateX(0)}
+.drawer .me{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:1px solid rgba(255,255,255,.14)}
+/* Tight enough that all eight destinations fit without scrolling. A menu you
+   have to scroll to reach Settings in reads as half-finished. */
+.drawer nav{flex:1;overflow-y:auto;padding-top:8px;scrollbar-width:none}
+.drawer nav::-webkit-scrollbar{display:none}
+.drawer nav button{
+  display:flex;align-items:center;gap:13px;width:100%;padding:10px 12px;border-radius:15px;
+  font-size:14.5px;font-weight:500;color:rgba(255,255,255,.82);transition:background .2s;
+}
+.drawer nav button:active,.drawer nav button:hover{background:rgba(255,255,255,.09)}
+/* The trailing chevron: pinned right, faint, and nudged on hover. */
+.drawer nav button > svg:last-child{
+  margin-left:auto;opacity:.32;transition:transform .2s var(--ease),opacity .2s;
+}
+.drawer nav button:hover > svg:last-child{opacity:.7;transform:translateX(3px)}
+.drawer nav button > span:first-child{
+  width:26px;display:grid;place-items:center;flex:none;opacity:.75;
+}
+.drawer nav .sep{margin:10px 12px 5px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.drawer .out{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:9px;padding:11px;border-radius:99px;border:1px solid rgba(255,255,255,.22);font-size:14px;font-weight:600;color:#fff}
+.drawer .note{margin-top:9px;text-align:center;font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+.drawer .dsc{display:flex;align-items:center;gap:13px;width:100%;padding:10px 12px;border-radius:15px;border-top:1px solid rgba(255,255,255,.14);margin-top:8px;color:rgba(255,255,255,.85)}
+.drawer .dsc .ts{font-size:11.5px}
+.sw{width:44px;height:26px;border-radius:99px;background:rgba(255,255,255,.22);position:relative;flex:none;transition:background .22s}
+.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .22s var(--ease)}
+.sw.on{background:var(--mint)}
+.sw.on i{left:21px}
+
+/* ── Sheet ───────────────────────────────────────────────── */
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:100;
+  background:#fff;border-radius:26px 26px 0 0;transform:translateY(101%);
+  transition:transform .42s var(--ease);max-height:86%;display:flex;flex-direction:column;
+  box-shadow:0 -20px 50px -24px rgba(14,42,71,.4);
+}
+.sheet.on{transform:translateY(0)}
+.sheet .grab{width:40px;height:4px;border-radius:99px;background:var(--line);margin:10px auto 4px;flex:none}
+.sheet .sbody{overflow-y:auto;padding:14px 22px 34px;scrollbar-width:none}
+.sheet .sbody::-webkit-scrollbar{display:none}
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast{
+  position:absolute;left:20px;right:20px;bottom:106px;z-index:130;
+  background:var(--navy);color:#fff;border-radius:18px;padding:14px 17px;
+  font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:10px;
+  transform:translateY(20px);opacity:0;pointer-events:none;transition:all .34s var(--ease);
+  box-shadow:0 18px 40px -18px rgba(0,0,0,.6);
+}
+.toast.on{transform:none;opacity:1}
+
+/* ── Content primitives ──────────────────────────────────── */
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--ink-faint)}
+.eyebrow.light{color:rgba(255,255,255,.5)}
+.eyebrow.mint{color:var(--mint)}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:17px;width:100%}
+.card + .card{margin-top:10px}
+.card.navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.card.sand{background:var(--sand);border-color:transparent}
+.card.coral{background:var(--coral-wash);border-color:rgba(228,90,74,.2)}
+.card.mint{background:var(--mint-wash);border-color:rgba(38,163,140,.22)}
+.tap{transition:transform .12s}
+.tap:active{transform:scale(.985)}
+
+.sect{margin-top:22px}
+.sect-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:11px}
+.sect-head h2{font-family:var(--display);font-weight:500;font-size:19px;letter-spacing:-.015em}
+.sect-head button{font-size:12.5px;font-weight:600;color:var(--navy);flex:none}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:50px;padding:0 24px;border-radius:99px;
+  background:var(--navy);color:#fff;font-size:15px;font-weight:600;white-space:nowrap;
+  transition:transform .12s,opacity .2s;
+}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.block{width:100%}
+.btn.sm{height:40px;padding:0 17px;font-size:13.5px}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.btn.light{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff}
+.btn.white{background:#fff;color:var(--navy)}
+.btn.mint{background:var(--mint)}
+.btn.coral{background:var(--coral)}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+.btn-row .btn{flex:1}
+
+.chip{
+  display:inline-flex;align-items:center;gap:5px;border-radius:99px;
+  padding:4px 11px;font-size:11px;font-weight:600;
+  background:var(--navy-wash);color:var(--navy);
+}
+.chip.mint{background:var(--mint-wash);color:var(--mint)}
+.chip.coral{background:var(--coral-wash);color:var(--coral)}
+.chip.muted{background:rgba(0,0,0,.05);color:var(--ink-soft)}
+.chip.light{background:rgba(255,255,255,.16);color:#fff}
+
+.av{
+  width:42px;height:42px;border-radius:14px;flex:none;display:grid;place-items:center;
+  font-size:13px;font-weight:700;background:var(--navy);color:#fff;
+}
+.av.mint{background:var(--mint)}
+.av.coral{background:var(--coral)}
+.av.soft{background:var(--navy-wash);color:var(--navy)}
+.av.sm{width:34px;height:34px;border-radius:11px;font-size:11px}
+.av.lg{width:56px;height:56px;border-radius:18px;font-size:17px}
+
+.row{display:flex;align-items:center;gap:12px}
+/* Global, not scoped to .row — the drawer buttons and list rows are flex
+   containers too, and scoping it here left their trailing chevrons hugging
+   the label instead of sitting at the right edge. */
+.grow{flex:1;min-width:0}
+.tt{font-size:14.5px;font-weight:600}
+.ts{font-size:12px;color:var(--ink-faint);margin-top:2px}
+.tnum{font-variant-numeric:tabular-nums}
+.trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.list{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
+.list > *{
+  padding:14px 16px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;width:100%;
+}
+.list > *:last-child{border-bottom:0}
+.list button{transition:background .15s}
+.list button:active{background:var(--surface)}
+
+.kv{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv dt{font-size:12.5px;color:var(--ink-faint)}
+.kv dd{font-size:13.5px;font-weight:600;text-align:right}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:15px}
+.stat .v{font-family:var(--display);font-weight:500;font-size:28px;line-height:1;color:var(--navy);font-variant-numeric:tabular-nums}
+.stat .l{font-size:11.5px;color:var(--ink-soft);margin-top:6px;line-height:1.3}
+.stat.glass{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.16)}
+.stat.glass .v{color:#fff}
+.stat.glass .l{color:rgba(255,255,255,.6)}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.ctl{
+  width:100%;min-height:50px;border:1px solid var(--line);border-radius:16px;
+  padding:13px 15px;font-size:15px;background:#fff;color:var(--ink);
+  display:flex;align-items:center;gap:10px;font-family:inherit;
+}
+.ctl::placeholder{color:var(--ink-faint)}
+.ctl:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 4px var(--navy-wash)}
+textarea.ctl{min-height:92px;align-items:flex-start;resize:none;line-height:1.55}
+.ctl.ph{color:var(--ink-faint)}
+
+.seg{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{
+  flex:none;border-radius:99px;padding:9px 16px;font-size:12.5px;font-weight:600;
+  background:#fff;border:1px solid var(--line);color:var(--ink-soft);transition:all .2s;
+}
+.seg button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+
+.opt{
+  display:flex;align-items:center;gap:13px;width:100%;padding:15px;border-radius:19px;
+  border:1.5px solid var(--line);background:#fff;transition:all .18s;margin-bottom:9px;
+}
+.opt[aria-pressed="true"]{border-color:var(--navy);background:var(--navy-wash);box-shadow:0 0 0 3px rgba(14,42,71,.07)}
+.opt:active{transform:scale(.985)}
+.opt .tick{
+  width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);flex:none;
+  display:grid;place-items:center;color:#fff;
+}
+.opt[aria-pressed="true"] .tick{background:var(--navy);border-color:var(--navy)}
+
+.slot{
+  display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:17px;
+  border:1px solid var(--line);background:#fff;width:100%;margin-bottom:8px;transition:transform .12s;
+}
+.slot:active{transform:scale(.985)}
+.slot .time{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;width:48px;flex:none;color:var(--navy)}
+.slot.free{border-style:dashed;background:transparent}
+.slot.free .time{color:var(--ink-faint)}
+.slot.now{border-color:var(--navy);box-shadow:0 0 0 3px var(--navy-wash)}
+
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.days button{
+  flex:none;width:60px;padding:11px 0;border-radius:18px;border:1px solid var(--line);
+  background:#fff;text-align:center;transition:all .18s;
+}
+.days button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.days .wd{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.55}
+.days .dd{font-family:var(--display);font-weight:500;font-size:21px;line-height:1.1;font-variant-numeric:tabular-nums}
+.days .mo{font-size:10px;opacity:.55}
+
+.times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.times button{
+  padding:12px 0;border-radius:14px;border:1px solid var(--line);background:#fff;
+  font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;text-align:center;transition:all .18s;
+}
+.times button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.times button[disabled]{background:var(--surface);color:var(--ink-faint);opacity:.55;text-decoration:line-through;pointer-events:none}
+
+.steps{display:flex;gap:5px;padding:0 20px 12px}
+.steps span{flex:1;height:3px;border-radius:99px;background:var(--line);overflow:hidden}
+.steps span i{display:block;height:100%;width:0;background:var(--navy);transition:width .45s var(--ease)}
+.steps span.done i,.steps span.now i{width:100%}
+
+.bar{height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--navy);transition:width .6s var(--ease)}
+.bar i.mint{background:var(--mint)}
+
+.msg{max-width:80%;padding:11px 15px;border-radius:19px;font-size:14px;line-height:1.5}
+.msg.them{background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px;align-self:flex-start}
+.msg.us{background:var(--navy);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+.msg-t{font-size:10.5px;opacity:.55;margin-top:4px}
+
+.blur{filter:blur(6px);transition:filter .22s;cursor:pointer}
+.blur.shown,.blur:active{filter:none}
+
+.empty{text-align:center;padding:48px 24px}
+.empty .ic{width:56px;height:56px;border-radius:19px;background:var(--navy-wash);color:var(--navy);display:grid;place-items:center;margin:0 auto 15px}
+
+/* min-height, not height: the summary card grows with the booking, and a
+   fixed 100% pushed the last rows behind the sticky Done button. */
+.succ{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;min-height:100%;padding:0 30px;
+}
+.succ .ring{
+  width:96px;height:96px;border-radius:50%;background:var(--mint);color:#fff;
+  display:grid;place-items:center;margin-bottom:26px;
+  animation:pop .6s var(--ease) both;
+}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+.succ h2{font-family:var(--display);font-weight:500;font-size:32px;letter-spacing:-.02em}
+.succ p{color:var(--ink-soft);font-size:14.5px;margin-top:10px;line-height:1.6}
+
+svg.i{width:19px;height:19px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+svg.i.sm{width:15px;height:15px}
+svg.i.lg{width:24px;height:24px}
+svg.i.xl{width:40px;height:40px;stroke-width:1.4}
+
+/* The frame is a fixed 402×874 box. It is scaled to fit by fitDevice() rather
+   than shrunk by CSS, because squashing the height alone turns the phone into
+   a letterbox — the proportions are half the point of showing a device. */
+.device{transform-origin:top center}
+
+/* Narrow desktop / tablet: the note goes, so the device gets the whole
+   window. Stacking it above only pushed the phone off the bottom edge. */
+@media(max-width:900px){
+  body{padding:20px 16px}
+  .aside{display:none}
+}
+
+/* A short window. The note column runs to about 530px of text, so on a laptop
+   in a half-height window IT — not the phone — is what makes the page scroll:
+   body is a centred flex row, so its height is the tallest item. Drop the
+   note and the device gets the window to itself. */
+@media(max-height:660px){
+  body{padding:20px}
+  .aside{display:none}
+}
+
+/* An actual phone.
+   No device frame here — a phone drawn inside a phone is absurd, and the
+   bezel plus the fake status bar and home indicator cost the app a third of
+   a small screen. The app simply becomes the page: the real status bar, the
+   real home indicator and the real safe areas do the work the mock chrome
+   was doing. */
+@media(max-width:760px){
+  body{display:block;padding:0;background:var(--surface);min-height:100svh}
+  .aside{display:none}
+
+  .device{
+    width:100%;height:100svh;padding:0;border-radius:0;
+    background:none;box-shadow:none;
+  }
+  .device::before,.device::after{display:none}
+  .viewport{border-radius:0}
+  .island,.status,.home-bar{display:none}
+
+  .nav{padding-top:calc(env(safe-area-inset-top, 0px) + 16px)}
+  .drawer{
+    width:86%;
+    padding-top:calc(env(safe-area-inset-top, 0px) + 22px);
+    padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 22px);
+  }
+  .tabs{
+    height:calc(70px + env(safe-area-inset-bottom, 0px));
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  .body.with-tabs{padding-bottom:calc(90px + env(safe-area-inset-bottom, 0px))}
+  .body.with-cta{padding-bottom:calc(106px + env(safe-area-inset-bottom, 0px))}
+  .cta-bar{padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+  .toast{bottom:calc(92px + env(safe-area-inset-bottom, 0px))}
+  .sheet{padding-bottom:env(safe-area-inset-bottom, 0px)}
+
+  /* Tighten the menu so all nine destinations fit without scrolling on a
+     short phone — a nav you have to scroll to find Settings in reads as
+     half-finished. */
+  .drawer .me{padding-bottom:13px}
+  .drawer nav{padding-top:6px}
+  .drawer nav button{padding:9px 12px}
+  .drawer nav .sep{margin:9px 12px 4px}
+  .drawer .dsc{padding:10px 12px;margin-top:6px}
+  .drawer .out{margin-top:8px;padding:12px}
+  .drawer .note{margin-top:10px}
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 5.2a3.4 3.4 0 0 1 0 6.6M17 14.4a6.5 6.5 0 0 1 4.5 5.6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5"/><path d="M10.5 19a1.8 1.8 0 0 0 3 0"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-3.6-3.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.4A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M9 3h6M7.5 15h9"/></symbol>
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 8V5.5A2.5 2.5 0 0 1 5.5 3H8M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8M21 16v2.5a2.5 2.5 0 0 1-2.5 2.5H16M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/><path d="M7 12h10"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7.5 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 15a2 2 0 1 1 0-4 1.6 1.6 0 0 0 1.6-2.5l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 10 4.6V4a2 2 0 1 1 4 0v.6a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 21 11a2 2 0 1 1 0 4 1.6 1.6 0 0 0-1.6 1"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="4" transform="rotate(-45 12 12)"/><path d="M8.5 8.5l7 7"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M14 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h9"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 10.7a2 2 0 0 0 2.8 2.8"/><path d="M9.4 5.3A9.5 9.5 0 0 1 12 5c5 0 9 5 9 7a11 11 0 0 1-2.4 3.3M6.3 6.5C4.2 7.9 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 0 0 3.3-.6"/></symbol>
+  <symbol id="i-doc-up" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 18v-6M9.5 14.5 12 12l2.5 2.5"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 8.5v5M12 17h.01"/><circle cx="12" cy="12" r="9"/></symbol>
+  <symbol id="i-stetho" viewBox="0 0 24 24"><path d="M6 3v5a4 4 0 0 0 8 0V3"/><path d="M4 3h3M13 3h3M10 12v3a5 5 0 0 0 10 0v-1"/><circle cx="20" cy="12" r="2"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3v18l2.5-1.6L10 21l2-1.6L14 21l2.5-1.6L19 21V3z"/><path d="M9 8h6M9 12h6"/></symbol>
+</svg>
+
+<!-- ═══════════ side note ═══════════ -->
+<div class="aside">
+  <div class="brand">
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <rect width="48" height="48" rx="12" fill="#0E2A47"/>
+      <g transform="translate(24 24) scale(.62) translate(-24 -24)">
+        <path d="M40 17.5A18 18 0 1 0 42 26" stroke="#fff" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+        <path d="M42 26H29.5" stroke="#fff" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+      </g>
+    </svg>
+    <div><b>Elite Clinic</b><span>Clinic App</span></div>
+  </div>
+
+  <h1>The app the clinic runs on</h1>
+  <p>A working prototype, not a slideshow. Drive it like a real phone.</p>
+
+  <ul>
+    <li><span class="dot"></span><span>Tap the <b>bottom bar</b> to move between Today, Bookings, Patients and Results.</span></li>
+    <li><span class="dot"></span><span>Open the <b>menu</b> (top left) for payments, messages, rota, reports and settings.</span></li>
+    <li><span class="dot"></span><span>Tap <b>＋ New booking</b> and take it all the way to the confirmation.</span></li>
+    <li><span class="dot"></span><span>Tap any <b>blurred</b> name to reveal it — discreet mode, on by default.</span></li>
+  </ul>
+
+  <div class="warn">
+    <b>Prototype.</b> Every name, result and price is invented for the demo. Nothing is saved and nothing connects to a real system.
+  </div>
+</div>
+
+<!-- ═══════════ the device ═══════════ -->
+<div class="device">
+  <div class="viewport" id="vp" data-chrome="light">
+    <div class="island"></div>
+    <div class="status">
+      <span>9:41</span>
+      <span class="right">
+        <svg class="i sm" viewBox="0 0 24 24"><path d="M4 18V9M9 18V5M14 18v-8M19 18v-4"/></svg>
+        <svg class="i sm" viewBox="0 0 24 24"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.2a10 10 0 0 1 14 0M8.5 15.6a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/></svg>
+        <span class="batt"></span>
+      </span>
+    </div>
+
+    <div class="stack" id="stack"></div>
+
+    <div class="scrim" id="scrim"></div>
+    <aside class="drawer" id="drawer"></aside>
+
+    <div class="sheet" id="sheet"><div class="grab"></div><div class="sbody" id="sheetBody"></div></div>
+
+    <div class="toast" id="toast"></div>
+    <div class="home-bar"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Navigation is a real stack. `go()` pushes, `back()` pops, and
+   tab taps reset the stack to that tab's root — which is what
+   makes the back gesture behave the way a phone user expects
+   rather than unwinding through every tab they ever touched.
+   ============================================================ */
+
+const ic  = (n, c="i")   => `<svg class="${c}" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const money = n => n.toLocaleString("en-US");
+
+/* Icon names here are BARE — `ic()` adds the `i-` prefix itself. Writing
+   "i-home" here produced href="#i-i-home", which matches no symbol, so every
+   tab and drawer icon silently rendered as nothing. */
+const TABS = [
+  { id:"today",    label:"Today",    icon:"home"  },
+  { id:"bookings", label:"Bookings", icon:"cal", badge:2 },
+  { id:"patients", label:"Patients", icon:"users" },
+  { id:"results",  label:"Results",  icon:"file", badge:1 },
+];
+
+/* ── Fixtures ───────────────────────────────────────────── */
+
+const DAY = [
+  { t:"11:00", n:"Karim Hassan",  s:"Hormone follow-up",        st:"done", ini:"KH", tone:"" },
+  { t:"11:40", n:"Ahmed Sabry",   s:"Andrology — first visit",  st:"done", ini:"AS", tone:"mint" },
+  { t:"12:20", n:"",              s:"",                          st:"free", ini:"",   tone:"" },
+  { t:"13:00", n:"Tamer Nabil",   s:"Executive screening",       st:"now",  ini:"TN", tone:"coral" },
+  { t:"16:00", n:"Youssef Adel",  s:"Urology — PSA review",      st:"next", ini:"YA", tone:"" },
+  { t:"16:40", n:"Hazem Fouad",   s:"Male fertility",            st:"next", ini:"HF", tone:"mint" },
+  { t:"17:20", n:"",              s:"",                          st:"free", ini:"",   tone:"" },
+  { t:"18:00", n:"Omar Zaki",     s:"Andrology — follow-up",     st:"next", ini:"OZ", tone:"coral" },
+];
+
+const BOOKINGS = [
+  { ini:"MG", tone:"coral", n:"Mahmoud Galal", s:"Andrology — first visit", w:"Tue 23 Sep · 17:20", st:"new",       chip:"coral", note:"Booked online 14 min ago" },
+  { ini:"AS", tone:"",      n:"Amr Selim",     s:"Hormone panel",           w:"Tue 23 Sep · 18:00", st:"new",       chip:"coral", note:"Booked online 40 min ago" },
+  { ini:"YA", tone:"mint",  n:"Youssef Adel",  s:"Urology — PSA review",    w:"Today · 16:00",      st:"confirmed", chip:"mint",  note:"Reminder sent" },
+  { ini:"HF", tone:"",      n:"Hazem Fouad",   s:"Male fertility",          w:"Today · 16:40",      st:"confirmed", chip:"mint",  note:"Prep instructions sent" },
+  { ini:"TN", tone:"coral", n:"Tamer Nabil",   s:"Executive screening",     w:"Today · 13:00",      st:"in clinic", chip:"",      note:"Checked in 13:02" },
+  { ini:"KH", tone:"",      n:"Karim Hassan",  s:"Hormone follow-up",       w:"Today · 11:00",      st:"completed", chip:"muted", note:"Notes filed · invoice paid" },
+];
+
+const PATIENTS = [
+  ["KH","",      "Karim Hassan",   "EC-10482 · 0100 123 4567", "Last seen 15 Sep"],
+  ["TN","coral", "Tamer Nabil",    "EC-10511 · 0101 887 2234", "In clinic now"],
+  ["YA","mint",  "Youssef Adel",   "EC-10298 · 0122 445 8890", "Today 16:00"],
+  ["HF","",      "Hazem Fouad",    "EC-10390 · 0128 330 1120", "Today 16:40"],
+  ["MG","coral", "Mahmoud Galal",  "EC-10604 · 0100 998 2211", "New patient"],
+  ["OZ","",      "Omar Zaki",      "EC-10077 · 0106 771 9080", "Today 18:00"],
+];
+
+const SERVICES = [
+  { id:"consult",   n:"Men's Health Consultation", ar:"استشارة صحة الرجل",  min:40,  p:2500 },
+  { id:"andrology", n:"Andrology",                 ar:"أمراض الذكورة",      min:45,  p:3000 },
+  { id:"fertility", n:"Male Fertility",            ar:"الخصوبة عند الرجل",  min:45,  p:3500 },
+  { id:"hormones",  n:"Hormone & Testosterone",    ar:"الهرمونات",          min:35,  p:2800 },
+  { id:"urology",   n:"General Urology",           ar:"المسالك البولية",     min:40,  p:2500 },
+  { id:"screening", n:"Executive Screening",       ar:"الفحص الشامل",       min:180, p:9500 },
+];
+
+const DOCTORS = [
+  { id:"og", ini:"OG", tone:"",      n:"Dr. Osama Ghattas", r:"Consultant andrologist", days:"Sat–Thu" },
+  { id:"hn", ini:"HN", tone:"mint",  n:"Dr. Hany Nassar",   r:"Consultant urologist",   days:"Sun · Tue · Thu" },
+  { id:"ma", ini:"MA", tone:"coral", n:"Dr. Mona Adel",     r:"Endocrinologist",        days:"Sat · Mon · Wed" },
+];
+
+const ANALYTES = [
+  ["Total testosterone","8.1","nmol/L","10.4–34.6",1],
+  ["Free testosterone","168","pmol/L","196–636",1],
+  ["LH","3.1","IU/L","1.7–8.6",0],
+  ["FSH","2.8","IU/L","1.5–12.4",0],
+  ["Prolactin","244","mIU/L","86–324",0],
+  ["SHBG","28","nmol/L","18–54",0],
+  ["TSH","2.1","mIU/L","0.4–4.0",0],
+  ["HbA1c","5.9","%","4.0–5.6",1],
+  ["Vitamin D","41","nmol/L","50–125",1],
+];
+
+/* Days for the booking calendar — built from real dates, skipping Friday. */
+function upcomingDays(count){
+  const out=[]; const c=new Date(); c.setHours(0,0,0,0); c.setDate(c.getDate()+1);
+  while(out.length<count){
+    if(c.getDay()!==5) out.push({
+      iso:`${c.getFullYear()}-${String(c.getMonth()+1).padStart(2,"0")}-${String(c.getDate()).padStart(2,"0")}`,
+      wd:c.toLocaleDateString("en-GB",{weekday:"short"}),
+      dd:String(c.getDate()),
+      mo:c.toLocaleDateString("en-GB",{month:"short"}),
+      long:c.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"}),
+    });
+    c.setDate(c.getDate()+1);
+  }
+  return out;
+}
+const DAYS = upcomingDays(10);
+const SLOTS = ["11:00","11:40","12:20","13:00","13:40","16:00","16:40","17:20","18:00","18:40","19:20","20:00"];
+
+/** Taken slots derived from the date so the grid never reshuffles on render. */
+function takenFor(iso){
+  let seed=0; for(const ch of iso) seed=(seed*31+ch.charCodeAt(0))>>>0;
+  const t=new Set();
+  for(const s of SLOTS){ seed=(seed*1103515245+12345)>>>0; if(seed%100<38) t.add(s); }
+  return t;
+}
+
+/* ── Booking draft ──────────────────────────────────────── */
+
+let draft = null;
+const freshDraft = () => ({ step:0, patient:null, newName:"", newPhone:"", service:null, doctor:"og", date:null, time:null, note:"" });
+
+/* ── Chrome helpers ─────────────────────────────────────── */
+
+const nav = (title, o={}) => `
+  <header class="nav${o.navy?" on-navy":""}">
+    ${o.back ? `<button class="rnd" data-back>${ic("back","i sm")}</button>`
+             : `<button class="rnd" data-menu>${ic("menu","i sm")}</button>`}
+    <div class="grow">
+      <h1>${title}</h1>
+      ${o.sub?`<div class="sub">${o.sub}</div>`:""}
+    </div>
+    ${o.acts?`<div class="acts">${o.acts}</div>`:""}
+  </header>`;
+
+const tabbar = active => `
+  <nav class="tabs">${TABS.map(t=>`
+    <button data-tab="${t.id}" ${t.id===active?'aria-current="true"':""}>
+      <span class="wrap">${ic(t.icon,"i lg")}${t.badge?`<span class="badge">${t.badge}</span>`:""}</span>
+      <span>${t.label}</span>
+    </button>`).join("")}</nav>`;
+
+/**
+ * Discreet mode — the clinic's real feature, but OFF by default here.
+ *
+ * On by default it reads as a rendering fault to anyone seeing the prototype
+ * cold: half the screen is grey smudge and nothing explains why. The toggle
+ * lives in the menu so it can be demonstrated deliberately.
+ */
+let discreet = false;
+const blur = txt => discreet ? `<span class="blur" data-reveal>${txt}</span>` : txt;
+
+/* ── Screens ────────────────────────────────────────────── */
+
+const SCREENS = {
+
+/* ---------- Today ---------- */
+today: () => ({ chrome:"dark", html:`
+  ${nav("Today")}
+  <div class="body with-tabs flush">
+    <div style="background:var(--navy);color:#fff;padding:0 20px 24px;margin-top:-10px;border-radius:0 0 28px 28px">
+      <div class="row" style="padding-top:4px">
+        <div class="grow">
+          <div class="eyebrow light">Tuesday 22 September</div>
+          <div style="font-family:var(--display);font-weight:500;font-size:29px;margin-top:5px;letter-spacing:-.02em">Good morning, Nada</div>
+        </div>
+        <button class="rnd" data-go="activity" style="border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff">${ic("bell","i sm")}</button>
+      </div>
+      <div class="grid2" style="margin-top:18px">
+        <div class="stat glass"><div class="v">7</div><div class="l">Appointments today</div></div>
+        <div class="stat glass"><div class="v">2</div><div class="l">Awaiting confirmation</div></div>
+      </div>
+    </div>
+
+    <div style="padding:20px 20px 0">
+      <div class="card coral">
+        <div class="row" style="align-items:flex-start">
+          <span style="color:var(--coral);margin-top:1px">${ic("alert","i sm")}</span>
+          <div class="grow">
+            <div class="tt" style="font-size:13.5px">3 things need you</div>
+            <div class="ts" style="margin-top:4px">2 new bookings to confirm · 1 lab result to publish</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn sm coral" data-tab="bookings">Review bookings</button>
+          <button class="btn sm ghost" data-tab="results">Results</button>
+        </div>
+      </div>
+
+      <div class="sect">
+        <div class="sect-head"><h2>In the clinic now</h2><button data-go="bookingDetail">Open</button></div>
+        <button class="card navy tap" data-go="bookingDetail">
+          <div class="row">
+            <span class="av coral">TN</span>
+            <div class="grow">
+              <div class="tt">Tamer Nabil</div>
+              <div class="ts" style="color:rgba(255,255,255,.6)">${blur("Executive screening")} · 13:00</div>
+            </div>
+            <span class="chip light">Room 2</span>
+          </div>
+          <div style="margin-top:14px">
+            <div class="row" style="justify-content:space-between;font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:6px">
+              <span>Bloods · Ultrasound · ECG · Consult</span><span class="tnum">3 of 4</span>
+            </div>
+            <div class="bar" style="background:rgba(255,255,255,.18)"><i class="mint" style="width:75%"></i></div>
+          </div>
+        </button>
+      </div>
+
+      <div class="sect">
+        <div class="sect-head"><h2>Next up</h2><button data-go="schedule">Full day</button></div>
+        ${DAY.filter(d=>d.st==="next").slice(0,3).map(d=>`
+          <button class="slot" data-go="bookingDetail">
+            <span class="time">${d.t}</span>
+            <span class="av sm ${d.tone}">${d.ini}</span>
+            <span class="grow">
+              <span class="tt" style="display:block;font-size:13.5px">${d.n}</span>
+              <span class="ts">${blur(d.s)}</span>
+            </span>
+            ${ic("chev","i sm")}
+          </button>`).join("")}
+      </div>
+
+      <div class="sect">
+        <div class="sect-head"><h2>Today so far</h2></div>
+        <div class="grid2">
+          <div class="stat"><div class="v">12,400</div><div class="l">EGP collected</div></div>
+          <div class="stat"><div class="v">4 min</div><div class="l">Average wait — target 0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  ${tabbar("today")}`}),
+
+/* ---------- Schedule ---------- */
+schedule: () => ({ chrome:"light", html:`
+  ${nav("Schedule",{back:1,sub:"Dr. Osama · Tuesday 22 Sep",acts:`<button class="rnd" data-go="newBooking">${ic("plus","i sm")}</button>`})}
+  <div class="body">
+    <div class="seg" style="margin-bottom:14px">
+      <button aria-pressed="true">Dr. Osama</button><button>Dr. Hany</button><button>Lab</button><button>Imaging</button>
+    </div>
+    <div class="card sand" style="margin-bottom:14px">
+      <div class="row">
+        <div class="grow">
+          <div class="eyebrow">Occupancy</div>
+          <div style="font-family:var(--display);font-weight:500;font-size:26px;margin-top:3px">6 of 8 slots</div>
+        </div>
+        <span class="chip mint">75%</span>
+      </div>
+      <div class="bar" style="margin-top:12px"><i style="width:75%"></i></div>
+    </div>
+    ${DAY.map(d=> d.st==="free" ? `
+      <button class="slot free" data-go="newBooking">
+        <span class="time">${d.t}</span>
+        <span class="grow" style="color:var(--ink-faint);font-size:13px">Free — tap to book</span>
+        ${ic("plus","i sm")}
+      </button>` : `
+      <button class="slot ${d.st==="now"?"now":""}" data-go="bookingDetail">
+        <span class="time">${d.t}</span>
+        <span class="av sm ${d.tone}">${d.ini}</span>
+        <span class="grow">
+          <span class="tt" style="display:block;font-size:13.5px">${d.n}</span>
+          <span class="ts">${blur(d.s)}</span>
+        </span>
+        <span class="chip ${d.st==="done"?"muted":d.st==="now"?"":"mint"}">${d.st==="done"?"Done":d.st==="now"?"In clinic":"Confirmed"}</span>
+      </button>`).join("")}
+    <div class="card" style="margin-top:12px">
+      <div class="row">${ic("clock","i sm")}<p style="font-size:12.5px;color:var(--ink-soft)">Slots are 40 minutes with a 20-minute gap, so no two patients are in the building together.</p></div>
+    </div>
+  </div>`}),
+
+/* ---------- Bookings ---------- */
+bookings: () => ({ chrome:"light", html:`
+  ${nav("Bookings",{sub:"2 waiting to be confirmed",acts:`<button class="rnd" data-go="newBooking">${ic("plus","i sm")}</button>`})}
+  <div class="body with-tabs">
+    <div class="seg" style="margin-bottom:14px">
+      <button aria-pressed="true">All</button><button>New · 2</button><button>Confirmed</button><button>In clinic</button><button>Done</button>
+    </div>
+    ${BOOKINGS.map(b=>`
+      <div class="card tap">
+        <button data-go="bookingDetail" style="width:100%">
+          <div class="row">
+            <span class="av ${b.tone}">${b.ini}</span>
+            <span class="grow">
+              <span class="tt" style="display:block">${b.n}</span>
+              <span class="ts">${blur(b.s)}</span>
+            </span>
+            <span class="chip ${b.chip}">${b.st}</span>
+          </div>
+          <div class="row" style="margin-top:12px;justify-content:space-between;padding-top:11px;border-top:1px solid var(--line)">
+            <span class="ts tnum">${b.w}</span><span class="ts">${b.note}</span>
+          </div>
+        </button>
+        ${b.st==="new"?`
+        <div class="btn-row">
+          <button class="btn sm mint" data-toast="Booking confirmed · WhatsApp sent">${ic("check","i sm")} Confirm</button>
+          <button class="btn sm ghost" data-go="newBooking">Reschedule</button>
+        </div>`:""}
+      </div>`).join("")}
+  </div>
+  ${tabbar("bookings")}`}),
+
+/* ---------- Booking detail ---------- */
+bookingDetail: () => ({ chrome:"dark", html:`
+  ${nav("Tamer Nabil",{back:1,navy:1,sub:"Executive screening · Today 13:00",acts:`<button class="rnd" data-toast="Calling 0101 887 2234…">${ic("phone","i sm")}</button>`})}
+  <div class="body with-cta" style="padding-top:16px">
+    <div class="card mint">
+      <div class="row">
+        <span style="color:var(--mint)">${ic("check","i sm")}</span>
+        <div class="grow"><div class="tt" style="font-size:13.5px">Checked in at 13:02</div><div class="ts">Room 2 · with Dr. Osama</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:8px">Appointment</div>
+      <dl>
+        <div class="kv"><dt>Service</dt><dd>${blur("Executive screening")}</dd></div>
+        <div class="kv"><dt>Consultant</dt><dd>Dr. Osama Ghattas</dd></div>
+        <div class="kv"><dt>When</dt><dd class="tnum">Tue 22 Sep · 13:00</dd></div>
+        <div class="kv"><dt>Duration</dt><dd class="tnum">180 min</dd></div>
+        <div class="kv"><dt>Reference</dt><dd class="tnum">EC-418223</dd></div>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:10px">Screening progress</div>
+      ${[["Fasting bloods","done","09:10"],["Ultrasound","done","09:40"],["ECG","done","10:05"],["Consultation","now","13:00"]].map(([n,st,t])=>`
+        <div class="row" style="padding:9px 0;border-bottom:1px solid var(--line)">
+          <span class="av sm ${st==="done"?"mint":""}" style="width:26px;height:26px;border-radius:50%;${st==="now"?"background:var(--navy)":""}">${st==="done"?ic("check","i sm"):""}</span>
+          <span class="grow" style="font-size:13.5px;font-weight:600">${n}</span>
+          <span class="ts tnum">${t}</span>
+        </div>`).join("")}
+    </div>
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:8px">Patient note</div>
+      <p style="font-size:13.5px;line-height:1.6;color:var(--ink-soft)">${blur("Family history of prostate cancer — father, 62. Wants PSA discussed specifically.")}</p>
+      <div class="ts" style="margin-top:8px">Added by the patient at booking</div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div class="grow">
+          <div class="eyebrow">To be charged</div>
+          <div class="tnum" style="font-family:var(--display);font-weight:500;font-size:27px;margin-top:3px;color:var(--navy)">9,500 EGP</div>
+        </div>
+        <span class="chip coral">Unpaid</span>
+      </div>
+      <button class="btn block" data-go="payment" style="margin-top:13px">${ic("card","i sm")} Take payment</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" data-go="patient">Open file</button>
+      <button class="btn ghost" data-go="uploadResult">Attach result</button>
+    </div>
+  </div>
+  <div class="cta-bar">
+    <button class="btn block mint" data-toast="Visit marked complete">${ic("check","i sm")} Mark visit complete</button>
+  </div>`}),
+
+/* ---------- New booking (the wizard) ---------- */
+newBooking: () => ({ chrome:"light", html: bookingWizard() }),
+
+/* ---------- Patients ---------- */
+patients: () => ({ chrome:"light", html:`
+  ${nav("Patients",{sub:"1,284 files",acts:`<button class="rnd" data-toast="Add patient">${ic("plus","i sm")}</button>`})}
+  <div class="body with-tabs">
+    <div class="ctl ph" style="margin-bottom:13px">${ic("search","i sm")} Name, mobile or file number</div>
+    <div class="seg" style="margin-bottom:13px">
+      <button aria-pressed="true">All</button><button>Seen this month</button><button>Open results</button><button>Owes money</button>
+    </div>
+    <div class="list">
+      ${PATIENTS.map(([ini,tone,n,meta,last])=>`
+        <button data-go="patient">
+          <span class="av sm ${tone}">${ini}</span>
+          <span class="grow">
+            <span class="tt" style="display:block;font-size:14px">${n}</span>
+            <span class="ts tnum">${meta}</span>
+          </span>
+          <span class="ts" style="flex:none">${last}</span>
+        </button>`).join("")}
+    </div>
+  </div>
+  ${tabbar("patients")}`}),
+
+/* ---------- Patient file ---------- */
+patient: () => ({ chrome:"dark", html:`
+  ${nav("Karim Hassan",{back:1,navy:1,sub:"EC-10482 · 40 years",acts:`<button class="rnd" data-go="thread">${ic("chat","i sm")}</button>`})}
+  <div class="body with-cta" style="padding-top:16px">
+    <div class="card coral">
+      <div class="eyebrow" style="color:var(--coral)">Flags</div>
+      <div style="margin-top:8px;font-size:13.5px;line-height:1.6">
+        <div class="row" style="gap:8px"><span style="color:var(--coral)">${ic("alert","i sm")}</span><span><b>Penicillin allergy</b> — rash, 2019</span></div>
+        <div class="row" style="gap:8px;margin-top:6px"><span style="color:var(--coral)">${ic("alert","i sm")}</span><span>On statin — check interactions</span></div>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Working diagnosis</h2><button data-toast="Edit diagnosis">Edit</button></div>
+      <div class="card">
+        <div class="tt" style="font-size:14px">${blur("Suspected secondary hypogonadism")}</div>
+        <p class="ts" style="margin-top:6px;line-height:1.5">Pending pituitary imaging. Repeat morning testosterone 8.1 nmol/L with low-normal LH.</p>
+        <div class="ts" style="margin-top:8px">Dr. Osama Ghattas · 15 Sep</div>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Visits</h2><button data-tab="bookings">All 6</button></div>
+      <div class="list">
+        ${[["29 Sep","Hormone follow-up","Upcoming","mint"],["15 Sep","Hormone panel — bloods","Completed","muted"],["14 Sep","Scrotal ultrasound","Completed","muted"],["2 Sep","First consultation","Completed","muted"]].map(([d,s,st,chip])=>`
+          <button data-go="bookingDetail">
+            <span class="grow">
+              <span class="tt" style="display:block;font-size:13.5px">${blur(s)}</span>
+              <span class="ts tnum">${d}</span>
+            </span>
+            <span class="chip ${chip}">${st}</span>
+          </button>`).join("")}
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Results</h2><button data-tab="results">All</button></div>
+      <div class="list">
+        ${[["flask","mint","Hormone panel — repeat","15 Sep","coral","2 flags"],["scan","","Scrotal ultrasound","14 Sep","muted","Reviewed"],["file","","Consultation report","2 Sep","muted","Reviewed"]].map(([i,tone,t,d,chip,cl])=>`
+          <button data-go="resultDetail">
+            <span class="av sm ${tone||"soft"}">${ic(i,"i sm")}</span>
+            <span class="grow">
+              <span class="tt" style="display:block;font-size:13.5px">${blur(t)}</span>
+              <span class="ts tnum">${d}</span>
+            </span>
+            <span class="chip ${chip}">${cl}</span>
+          </button>`).join("")}
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Account</h2><button data-go="payments">Invoices</button></div>
+      <div class="grid2">
+        <div class="stat"><div class="v">6,900</div><div class="l">EGP paid, lifetime</div></div>
+        <div class="stat"><div class="v" style="color:var(--coral)">1,500</div><div class="l">EGP outstanding</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-bar"><button class="btn block" data-go="newBooking">${ic("cal","i sm")} Book a visit</button></div>`}),
+
+/* ---------- Results ---------- */
+results: () => ({ chrome:"light", html:`
+  ${nav("Results",{sub:"1 waiting to be released",acts:`<button class="rnd" data-go="uploadResult">${ic("plus","i sm")}</button>`})}
+  <div class="body with-tabs">
+    <div class="seg" style="margin-bottom:14px">
+      <button aria-pressed="true">To review · 1</button><button>Released</button><button>Awaiting lab</button>
+    </div>
+
+    <div class="card coral">
+      <div class="row">
+        <span class="av coral">${ic("flask","i sm")}</span>
+        <div class="grow">
+          <div class="tt">${blur("Hormone panel — repeat")}</div>
+          <div class="ts">Karim Hassan · arrived 08:40</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px;gap:7px">
+        <span class="chip coral">2 outside range</span><span class="chip muted">9 analytes</span>
+      </div>
+      <div class="btn-row"><button class="btn sm" data-go="resultDetail">Review & release</button></div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Awaiting the lab</h2></div>
+      <div class="list">
+        ${[["scan","Pituitary MRI","Karim Hassan · sent 21 Sep","Due 48h"],["flask","Semen analysis","Hazem Fouad · collected 22 Sep","Due 24 Sep"]].map(([i,t,s,d])=>`
+          <div>
+            <span class="av sm soft">${ic(i,"i sm")}</span>
+            <span class="grow"><span class="tt" style="display:block;font-size:13.5px">${blur(t)}</span><span class="ts">${s}</span></span>
+            <span class="chip muted">${d}</span>
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-head"><h2>Released today</h2></div>
+      <div class="list">
+        ${[["Scrotal ultrasound","Karim Hassan","09:10"],["Consultation report","Ahmed Sabry","11:55"]].map(([t,s,tm])=>`
+          <button data-go="resultDetail">
+            <span class="av sm mint">${ic("check","i sm")}</span>
+            <span class="grow"><span class="tt" style="display:block;font-size:13.5px">${blur(t)}</span><span class="ts">${s} · sent ${tm}</span></span>
+            ${ic("chev","i sm")}
+          </button>`).join("")}
+      </div>
+    </div>
+  </div>
+  ${tabbar("results")}`}),
+
+/* ---------- Result detail ---------- */
+resultDetail: () => ({ chrome:"light", html:`
+  ${nav("Hormone panel",{back:1,sub:"Karim Hassan · 15 Sep"})}
+  <div class="body with-cta">
+    <div class="card coral">
+      <div class="eyebrow" style="color:var(--coral)">Outside reference range</div>
+      <div style="margin-top:9px">
+        ${[["Total testosterone","8.1 nmol/L","below 10.4"],["Vitamin D","41 nmol/L","below 50"]].map(([n,v,r])=>`
+          <div class="row" style="padding:5px 0"><span class="grow" style="font-size:13.5px"><b>${n}</b></span><span class="tnum" style="font-size:13px;color:var(--coral);font-weight:700">${v}</span></div>
+          <div class="ts" style="margin-top:-4px;margin-bottom:6px">${r}</div>`).join("")}
+      </div>
+    </div>
+
+    <div class="list" style="margin-top:12px">
+      ${ANALYTES.map(([n,v,u,r,f])=>`
+        <div style="${f?"background:var(--coral-wash)":""}">
+          <span class="grow"><span style="font-size:13.5px;font-weight:500">${n}</span><span class="ts tnum">ref ${r}</span></span>
+          <span class="tnum" style="font-size:14.5px;font-weight:700;color:${f?"var(--coral)":"var(--ink)"}">${v}<span style="font-size:11px;font-weight:400;color:var(--ink-faint)"> ${u}</span></span>
+        </div>`).join("")}
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-bottom:9px">Note the patient will read</div>
+      <p style="font-size:13.5px;line-height:1.65;color:var(--ink-soft)">Total testosterone remains below range on a second morning sample, and LH is low-normal — that points to a secondary cause rather than testicular failure. Prolactin is normal, which rules out the most common one. We will review the pituitary picture at your follow-up before deciding on treatment.</p>
+      <div class="row" style="margin-top:11px;justify-content:space-between">
+        <span class="ts">Dr. Osama Ghattas</span>
+        <button style="font-size:12.5px;font-weight:600;color:var(--navy)" data-toast="Editing note">Edit</button>
+      </div>
+    </div>
+
+    <div class="card mint" style="margin-top:10px">
+      <div class="row" style="align-items:flex-start">${ic("chat","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">The patient gets “Elite Clinic — a document is ready in your portal.” The notification never names the test.</p></div>
+    </div>
+  </div>
+  <div class="cta-bar">
+    <button class="btn block mint" data-toast="Released to the patient portal">${ic("check","i sm")} Release to patient</button>
+  </div>`}),
+
+/* ---------- Upload result ---------- */
+uploadResult: () => ({ chrome:"light", html:`
+  ${nav("Attach a result",{back:1})}
+  <div class="body with-cta">
+    <div class="field"><label>Patient</label><div class="ctl"><span class="av sm">KH</span> Karim Hassan · EC-10482</div></div>
+    <div class="field"><label>Type</label>
+      <div class="seg"><button>Lab</button><button aria-pressed="true">Imaging</button><button>Report</button><button>Prescription</button></div>
+    </div>
+    <div class="field"><label>Title</label><input class="ctl" value="Pituitary MRI"></div>
+    <div class="field"><label>Requested by</label><div class="ctl">Dr. Osama Ghattas</div></div>
+
+    <button style="width:100%;border:1.5px dashed var(--line);border-radius:22px;padding:30px 20px;text-align:center;margin:6px 0 12px" data-toast="File picker (demo)">
+      <span style="display:grid;place-items:center;width:54px;height:54px;border-radius:18px;background:var(--navy-wash);color:var(--navy);margin:0 auto 12px">${ic("doc-up","i lg")}</span>
+      <span style="display:block;font-size:14px;font-weight:600">Add files</span>
+      <span class="ts" style="margin-top:4px;display:block">PDF, DICOM or photos · up to 50 MB</span>
+    </button>
+
+    <div class="list">
+      <div>
+        <span class="av sm soft">${ic("scan","i sm")}</span>
+        <span class="grow"><span class="tt" style="display:block;font-size:13.5px">pituitary-mri-2026-09-21.pdf</span><span class="ts tnum">3.4 MB · uploaded</span></span>
+        <span style="color:var(--mint)">${ic("check","i sm")}</span>
+      </div>
+    </div>
+
+    <div class="card sand" style="margin-top:12px">
+      <div class="row" style="align-items:flex-start">${ic("eye-off","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">Uploading does not publish. It goes to the review queue and only reaches the patient once a clinician releases it.</p></div>
+    </div>
+  </div>
+  <div class="cta-bar"><button class="btn block" data-toast="Saved to the review queue" data-then="results">Save to review queue</button></div>`}),
+
+/* ---------- Payments ---------- */
+payments: () => ({ chrome:"dark", html:`
+  ${nav("Payments",{back:1})}
+  <div class="body flush">
+    <div style="background:var(--navy);color:#fff;padding:0 20px 26px;margin-top:-10px;border-radius:0 0 28px 28px">
+      <div class="eyebrow light">Collected today</div>
+      <div class="tnum" style="font-family:var(--display);font-weight:500;font-size:42px;line-height:1.05;margin-top:5px">12,400 <span style="font-size:19px;opacity:.6">EGP</span></div>
+      <div class="row" style="gap:7px;margin-top:14px"><span class="chip light">Card 8,900</span><span class="chip light">Cash 3,500</span></div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div class="grid2">
+        <div class="stat"><div class="v" style="color:var(--coral)">3,100</div><div class="l">EGP outstanding</div></div>
+        <div class="stat"><div class="v">184k</div><div class="l">EGP this month</div></div>
+      </div>
+      <div class="sect">
+        <div class="sect-head"><h2>Unpaid</h2><button data-toast="Reminders sent to 2 patients">Chase all</button></div>
+        <div class="list">
+          ${[["TN","coral","Tamer Nabil","Executive screening","9,500"],["KH","","Karim Hassan","Follow-up · 29 Sep","1,500"]].map(([i,t,n,s,a])=>`
+            <button data-go="payment">
+              <span class="av sm ${t}">${i}</span>
+              <span class="grow"><span class="tt" style="display:block;font-size:13.5px">${n}</span><span class="ts">${blur(s)}</span></span>
+              <span class="tnum" style="font-size:14px;font-weight:700;color:var(--coral)">${a}</span>
+            </button>`).join("")}
+        </div>
+      </div>
+      <div class="sect">
+        <div class="sect-head"><h2>Today's receipts</h2></div>
+        <div class="list">
+          ${[["EC-INV-2291","Karim Hassan","Visa ·· 4417","2,800"],["EC-INV-2288","Ahmed Sabry","Cash","3,000"],["EC-INV-2286","Sherif Adly","Visa ·· 9021","2,500"],["EC-INV-2284","Omar Zaki","Instapay","4,100"]].map(([r,n,m,a])=>`
+            <div>
+              <span class="av sm mint">${ic("check","i sm")}</span>
+              <span class="grow"><span class="tt" style="display:block;font-size:13.5px">${n}</span><span class="ts tnum">${r} · ${m}</span></span>
+              <span class="tnum" style="font-size:14px;font-weight:700">${a}</span>
+            </div>`).join("")}
+        </div>
+      </div>
+    </div>
+  </div>`}),
+
+/* ---------- Take payment ---------- */
+payment: () => ({ chrome:"light", html:`
+  ${nav("Take payment",{back:1,sub:"Tamer Nabil · EC-10511"})}
+  <div class="body with-cta">
+    <div class="card">
+      <div class="eyebrow" style="margin-bottom:8px">Invoice EC-INV-2312</div>
+      <div class="kv"><dt style="color:var(--ink)">Executive health screening</dt><dd class="tnum">9,500 EGP</dd></div>
+      <div class="row" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);justify-content:space-between">
+        <span style="font-size:14px;font-weight:700">Total</span>
+        <span class="tnum" style="font-family:var(--display);font-weight:500;font-size:27px;color:var(--navy)">9,500 EGP</span>
+      </div>
+    </div>
+    <div class="sect">
+      <div class="sect-head"><h2>Method</h2></div>
+      <div class="grid2">
+        ${[["card","Card",1],["phone","Instapay",0],["receipt","Cash",0],["card","Transfer",0]].map(([i,n,on])=>`
+          <button class="opt" data-pick="method" style="flex-direction:column;gap:8px;text-align:center;margin:0;${on?"border-color:var(--navy);background:var(--navy-wash)":""}" aria-pressed="${on?"true":"false"}">
+            <span style="color:var(--navy)">${ic(i,"i lg")}</span>
+            <span style="font-size:13px;font-weight:600">${n}</span>
+          </button>`).join("")}
+      </div>
+    </div>
+    <div class="field" style="margin-top:18px"><label>Amount received</label><input class="ctl tnum" value="9,500 EGP" style="font-size:19px;font-weight:700"></div>
+    <div class="card sand">
+      <div class="row" style="align-items:flex-start">${ic("file","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">The receipt lands in the patient's portal and says <b>Elite Clinic</b> with a reference — no service name on the document the bank sees.</p></div>
+    </div>
+  </div>
+  <div class="cta-bar"><button class="btn block mint" data-toast="9,500 EGP marked as paid" data-then="payments">${ic("check","i sm")} Mark as paid</button></div>`}),
+
+/* ---------- Messages ---------- */
+messages: () => ({ chrome:"light", html:`
+  ${nav("Messages",{back:1,sub:"4 unread"})}
+  <div class="body">
+    <div class="list">
+      ${[["MG","coral","Mahmoud Galal","Okay. Tuesday evening if you have it.","09:12",1],
+         ["HF","","Hazem Fouad","Do I need to fast for the sample?","08:40",1],
+         ["YA","mint","Youssef Adel","Thank you — see you at 4.","Yesterday",0],
+         ["OZ","","Omar Zaki","Can I move to next week?","Yesterday",1]].map(([i,t,n,m,tm,un])=>`
+        <button data-go="thread">
+          <span class="av ${t}">${i}</span>
+          <span class="grow">
+            <span class="row" style="justify-content:space-between"><span class="tt" style="font-size:14px">${n}</span><span class="ts" style="flex:none">${tm}</span></span>
+            <span class="ts trunc" style="margin-top:3px;${un?"color:var(--ink);font-weight:500":""}">${m}</span>
+          </span>
+          ${un?`<span style="width:8px;height:8px;border-radius:50%;background:var(--coral);flex:none"></span>`:""}
+        </button>`).join("")}
+    </div>
+  </div>`}),
+
+/* ---------- Thread ---------- */
+thread: () => ({ chrome:"light", html:`
+  ${nav("Mahmoud Galal",{back:1,sub:"Enquiry · not yet a patient",acts:`<button class="rnd" data-toast="Calling…">${ic("phone","i sm")}</button>`})}
+  <div class="body" style="display:flex;flex-direction:column;gap:9px;background:var(--surface);padding-bottom:16px">
+    <div style="text-align:center;margin:6px 0"><span class="chip muted">Yesterday</span></div>
+    <div class="msg them">Hi — do I have to say what the appointment is for when I book?<div class="msg-t">19:42</div></div>
+    <div class="msg us">No. You pick a slot and that is all we need. Dr. Osama asks the rest in the room, with the door closed.<div class="msg-t">19:48 · Nada</div></div>
+    <div class="msg them">And will anyone see me in the waiting area?<div class="msg-t">19:51</div></div>
+    <div class="msg us">There is no shared waiting area. One patient is in the clinic at a time, and the entrance from the car park is private.<div class="msg-t">19:53 · Nada</div></div>
+    <div style="text-align:center;margin:6px 0"><span class="chip muted">Today</span></div>
+    <div class="msg them">Okay. Tuesday evening if you have it.<div class="msg-t">09:12</div></div>
+    <div class="card mint" style="margin-top:4px">
+      <div class="eyebrow mint">Quick replies</div>
+      <div class="row" style="gap:6px;margin-top:9px;flex-wrap:wrap">
+        ${["Send available slots","Prices","Directions","What to expect"].map(t=>`<button class="chip" data-toast="Sent: ${t}">${t}</button>`).join("")}
+      </div>
+    </div>
+  </div>
+  <div style="flex:none;border-top:1px solid var(--line);padding:12px 16px 30px;background:#fff">
+    <div class="row">
+      <input class="ctl" placeholder="Write a reply…" style="flex:1;min-height:46px">
+      <button class="btn" style="width:46px;height:46px;padding:0;border-radius:50%" data-toast="Reply sent">${ic("chev","i sm")}</button>
+    </div>
+  </div>`}),
+
+/* ---------- Services ---------- */
+services: () => ({ chrome:"light", html:`
+  ${nav("Services & prices",{back:1,sub:"6 active",acts:`<button class="rnd" data-toast="Add service">${ic("plus","i sm")}</button>`})}
+  <div class="body">
+    ${SERVICES.map(s=>`
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="tt">${s.n}</div>
+            <div class="ts" dir="rtl" style="font-family:var(--display);font-size:15px;margin-top:2px">${s.ar}</div>
+          </div>
+          <button data-toggle style="width:44px;height:26px;border-radius:99px;background:var(--mint);position:relative;flex:none">
+            <span style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .22s"></span>
+          </button>
+        </div>
+        <div class="row" style="margin-top:12px;padding-top:11px;border-top:1px solid var(--line);justify-content:space-between">
+          <span class="ts tnum">${s.min} min</span>
+          <span class="tnum" style="font-size:15px;font-weight:700;color:var(--navy)">${money(s.p)} EGP</span>
+        </div>
+      </div>`).join("")}
+    <div class="card sand" style="margin-top:12px">
+      <div class="row" style="align-items:flex-start">${ic("alert","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">A price change takes effect on new bookings only. Anyone already booked pays what they were quoted.</p></div>
+    </div>
+  </div>`}),
+
+/* ---------- Staff ---------- */
+staff: () => ({ chrome:"light", html:`
+  ${nav("Staff & rota",{back:1,acts:`<button class="rnd" data-toast="Add person">${ic("plus","i sm")}</button>`})}
+  <div class="body">
+    <div class="seg" style="margin-bottom:14px"><button aria-pressed="true">People</button><button>This week</button><button>Time off</button></div>
+    ${[["OG","","Dr. Osama Ghattas","Consultant andrologist","Sat–Thu","Full access"],
+       ["HN","mint","Dr. Hany Nassar","Consultant urologist","Sun · Tue · Thu","Clinical"],
+       ["MA","coral","Dr. Mona Adel","Endocrinologist","Sat · Mon · Wed","Clinical"],
+       ["ND","","Nada Ibrahim","Practice manager","Sat–Thu","Admin · no records"],
+       ["SM","mint","Sara Magdy","Front desk","Sat–Thu","Reception only"],
+       ["AH","coral","Ayman Hosni","Lab technician","Sat–Thu","Lab uploads"]].map(([i,t,n,r,d,a])=>`
+      <button class="card tap" data-toast="${n}">
+        <div class="row">
+          <span class="av ${t}">${i}</span>
+          <div class="grow"><div class="tt">${n}</div><div class="ts">${r}</div></div>
+          ${ic("chev","i sm")}
+        </div>
+        <div class="row" style="margin-top:12px;padding-top:11px;border-top:1px solid var(--line);justify-content:space-between">
+          <span class="ts">${d}</span>
+          <span class="chip ${a==="Full access"?"":a==="Clinical"?"mint":"muted"}">${a}</span>
+        </div>
+      </button>`).join("")}
+  </div>`}),
+
+/* ---------- Reports ---------- */
+reports: () => ({ chrome:"light", html:`
+  ${nav("Reports",{back:1,sub:"September 2026"})}
+  <div class="body">
+    <div class="seg" style="margin-bottom:14px"><button>Week</button><button aria-pressed="true">Month</button><button>Quarter</button><button>Year</button></div>
+    <div class="card navy">
+      <div class="eyebrow light">Revenue this month</div>
+      <div class="tnum" style="font-family:var(--display);font-weight:500;font-size:40px;line-height:1.05;margin-top:5px">184,300 <span style="font-size:18px;opacity:.6">EGP</span></div>
+      <div class="row" style="gap:7px;margin-top:12px"><span class="chip light">▲ 18% on August</span><span class="chip light">71 visits</span></div>
+      <div style="display:flex;align-items:flex-end;gap:7px;height:84px;margin-top:22px">
+        ${[42,55,38,64,71,58,83,76].map((h,i)=>`<div style="flex:1;height:${h}%;border-radius:6px 6px 3px 3px;background:${i===6?"#fff":"rgba(255,255,255,.22)"}"></div>`).join("")}
+      </div>
+    </div>
+    <div class="sect">
+      <div class="sect-head"><h2>Where the money comes from</h2></div>
+      <div class="card">
+        ${[["Executive screening","38%","var(--navy)"],["Andrology","24%","var(--mint)"],["Hormone & testosterone","17%","var(--coral)"],["Male fertility","12%","var(--navy-lift)"],["General urology","9%","var(--ink-faint)"]].map(([n,p,c])=>`
+          <div style="padding:8px 0">
+            <div class="row" style="justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:500">${n}</span><span class="tnum" style="font-size:13px;font-weight:700">${p}</span></div>
+            <div class="bar"><i style="width:${p};background:${c}"></i></div>
+          </div>`).join("")}
+      </div>
+    </div>
+    <div class="sect">
+      <div class="grid2">
+        <div class="stat"><div class="v">78%</div><div class="l">Diary occupancy</div></div>
+        <div class="stat"><div class="v" style="color:var(--coral)">5.6%</div><div class="l">No-show rate</div></div>
+        <div class="stat"><div class="v">4 min</div><div class="l">Median wait</div></div>
+        <div class="stat"><div class="v">61%</div><div class="l">Booked online</div></div>
+      </div>
+    </div>
+  </div>`}),
+
+/* ---------- Activity ---------- */
+activity: () => ({ chrome:"light", html:`
+  ${nav("Activity",{back:1})}
+  <div class="body">
+    <div class="seg" style="margin-bottom:14px"><button aria-pressed="true">All</button><button>Bookings</button><button>Results</button><button>Access log</button></div>
+    ${[["coral","New booking","Mahmoud Galal booked Andrology for Tue 23 Sep · 17:20","14 min ago"],
+       ["coral","New booking","Amr Selim booked a hormone panel for Tue 23 Sep · 18:00","40 min ago"],
+       ["mint","Result released","Dr. Osama released a scrotal ultrasound to Karim Hassan","09:10"],
+       ["","Record opened","Sara Magdy opened Tamer Nabil's appointment — reception view","09:02"],
+       ["mint","Payment","Ahmed Sabry paid 3,000 EGP in cash","12:20"],
+       ["coral","No-show","Ramy Samir did not attend 19:00 on 22 Sep · not charged","Yesterday"]].map(([t,ti,s,tm])=>`
+      <div class="card">
+        <div class="row" style="align-items:flex-start">
+          <span class="av sm ${t}" style="width:9px;height:9px;border-radius:50%;margin-top:6px"></span>
+          <div class="grow"><div class="tt" style="font-size:13.5px">${ti}</div><div class="ts" style="line-height:1.45;margin-top:3px">${blur(s)}</div></div>
+          <span class="ts" style="flex:none">${tm}</span>
+        </div>
+      </div>`).join("")}
+  </div>`}),
+
+/* ---------- Settings ---------- */
+settings: () => ({ chrome:"light", html:`
+  ${nav("Settings",{back:1,sub:"Nada Ibrahim · practice manager"})}
+  <div class="body">
+    <div class="list">
+      ${[["cog","Clinic details","Address, hours, closed days"],
+         ["clock","Slot length & gaps","40 min · 20 min gap"],
+         ["chat","Message templates","Confirmation, reminder, results"],
+         ["eye-off","Discreet messaging","On — services never named"],
+         ["map","Directions & parking","Sent with every confirmation"]].map(([i,t,s])=>`
+        <button data-toast="${t}">
+          <span class="av sm soft">${ic(i,"i sm")}</span>
+          <span class="grow"><span class="tt" style="display:block;font-size:13.5px">${t}</span><span class="ts">${s}</span></span>
+          ${ic("chev","i sm")}
+        </button>`).join("")}
+    </div>
+    <div class="card mint" style="margin-top:14px">
+      <div class="row" style="align-items:flex-start">${ic("eye-off","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">Discreet mode blurs patient names and services on every list. Tap a blurred value to reveal it.</p></div>
+    </div>
+    <button class="btn block ghost" style="margin-top:16px;color:var(--coral)" data-go="login">${ic("logout","i sm")} Sign out</button>
+    <p class="ts" style="text-align:center;margin-top:14px">Elite Clinic App · prototype build</p>
+  </div>`}),
+
+/* ---------- Login ---------- */
+login: () => ({ chrome:"light", html:`
+  <div class="body" style="display:flex;flex-direction:column;justify-content:center;padding:0 30px">
+    <svg width="54" height="54" viewBox="0 0 48 48" style="margin-bottom:26px">
+      <rect width="48" height="48" rx="12" fill="#0E2A47"/>
+      <g transform="translate(24 24) scale(.62) translate(-24 -24)">
+        <path d="M40 17.5A18 18 0 1 0 42 26" stroke="#fff" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+        <path d="M42 26H29.5" stroke="#fff" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+      </g>
+    </svg>
+    <h1 style="font-family:var(--display);font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-.02em">Clinic app</h1>
+    <p style="font-size:14px;color:var(--ink-soft);margin-top:10px">Sign in with the number the clinic registered for you. Access is per person, never a shared login.</p>
+    <div style="margin-top:28px">
+      <div class="field"><label>Mobile</label><input class="ctl tnum" value="0100 123 4567"></div>
+      <div class="field"><label>Six-digit code</label><input class="ctl tnum" value="••••••" style="letter-spacing:.4em;font-size:19px"></div>
+      <button class="btn block" data-root="today" style="margin-top:6px">Sign in</button>
+    </div>
+    <div class="card mint" style="margin-top:24px">
+      <div class="row" style="align-items:flex-start">${ic("eye-off","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">Patient names and services stay blurred on shared screens until tapped.</p></div>
+    </div>
+  </div>`}),
+
+};
+
+/* ── The booking wizard ─────────────────────────────────── */
+
+const WIZ = ["Patient","Service","When","Confirm"];
+
+function bookingWizard(){
+  if(!draft) draft = freshDraft();
+  const s = draft.step;
+
+  if(s === 4){
+    const svc = SERVICES.find(x=>x.id===draft.service);
+    const day = DAYS.find(d=>d.iso===draft.date);
+    return `
+      <div class="body with-cta" style="padding-top:34px">
+        <div class="succ">
+          <span class="ring">${ic("check","i xl")}</span>
+          <h2>Booking confirmed</h2>
+          <p>A WhatsApp confirmation is on its way. It says <b>Elite Clinic</b> and the time — never the service.</p>
+          <div class="card" style="margin-top:26px;text-align:left">
+            <div class="kv"><dt>Reference</dt><dd class="tnum">EC-${Math.floor(100000+Math.random()*899999)}</dd></div>
+            <div class="kv"><dt>Patient</dt><dd>${draft.patient || draft.newName || "—"}</dd></div>
+            <div class="kv"><dt>Service</dt><dd>${svc?svc.n:"—"}</dd></div>
+            <div class="kv"><dt>When</dt><dd class="tnum">${day?day.long:"—"} · ${draft.time||"—"}</dd></div>
+            <div class="kv"><dt>Fee</dt><dd class="tnum">${svc?money(svc.p)+" EGP":"—"}</dd></div>
+          </div>
+        </div>
+      </div>
+      <div class="cta-bar">
+        <button class="btn block" data-wiz="reset" data-root="bookings">Done</button>
+        <button class="btn block ghost" data-wiz="again" style="margin-top:8px">Book another</button>
+      </div>`;
+  }
+
+  const bodies = [ wizPatient, wizService, wizWhen, wizConfirm ];
+  const canNext = [
+    () => !!(draft.patient || (draft.newName.trim() && draft.newPhone.trim())),
+    () => !!draft.service,
+    () => !!(draft.date && draft.time),
+    () => true,
+  ];
+
+  return `
+    ${nav("New booking",{back:1,sub:`Step ${s+1} of 4 · ${WIZ[s]}`})}
+    <div class="steps">
+      ${WIZ.map((_,i)=>`<span class="${i<s?"done":i===s?"now":""}"><i></i></span>`).join("")}
+    </div>
+    <div class="body with-cta">${bodies[s]()}</div>
+    <div class="cta-bar">
+      <button class="btn block" data-wiz="next" ${canNext[s]()?"":"disabled"}>
+        ${s===3?"Confirm booking":"Continue"} ${s===3?"":ic("chev","i sm")}
+      </button>
+    </div>`;
+}
+
+function wizPatient(){
+  return `
+    <h2 style="font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:4px">Who is this for?</h2>
+    <p class="ts" style="margin-bottom:14px">Search an existing file, or take the details over the phone.</p>
+    <div class="ctl ph" style="margin-bottom:12px">${ic("search","i sm")} Search name or mobile</div>
+    ${PATIENTS.slice(0,4).map(([ini,tone,n,meta])=>`
+      <button class="opt" data-wiz="patient" data-val="${n}" aria-pressed="${draft.patient===n?"true":"false"}">
+        <span class="av sm ${tone}">${ini}</span>
+        <span class="grow"><span class="tt" style="display:block;font-size:14px">${n}</span><span class="ts tnum">${meta}</span></span>
+        <span class="tick">${ic("check","i sm")}</span>
+      </button>`).join("")}
+
+    <div class="sect">
+      <div class="sect-head"><h2>Or a new patient</h2></div>
+      <div class="field"><label>Full name</label><input class="ctl" data-wiz-input="newName" value="${draft.newName}" placeholder="As it appears on their ID"></div>
+      <div class="field"><label>Mobile</label><input class="ctl tnum" data-wiz-input="newPhone" value="${draft.newPhone}" placeholder="01012345678" inputmode="tel"></div>
+    </div>`;
+}
+
+function wizService(){
+  return `
+    <h2 style="font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:4px">What do they need?</h2>
+    <p class="ts" style="margin-bottom:14px">Not sure? Pick the consultation — Dr. Osama will place them correctly.</p>
+    ${SERVICES.map(s=>`
+      <button class="opt" data-wiz="service" data-val="${s.id}" aria-pressed="${draft.service===s.id?"true":"false"}">
+        <span class="grow">
+          <span class="tt" style="display:block;font-size:14.5px">${s.n}</span>
+          <span class="ts tnum">${s.min} min · ${money(s.p)} EGP</span>
+        </span>
+        <span class="tick">${ic("check","i sm")}</span>
+      </button>`).join("")}
+
+    <div class="sect">
+      <div class="sect-head"><h2>Consultant</h2></div>
+      ${DOCTORS.map(d=>`
+        <button class="opt" data-wiz="doctor" data-val="${d.id}" aria-pressed="${draft.doctor===d.id?"true":"false"}">
+          <span class="av sm ${d.tone}">${d.ini}</span>
+          <span class="grow"><span class="tt" style="display:block;font-size:14px">${d.n}</span><span class="ts">${d.r} · ${d.days}</span></span>
+          <span class="tick">${ic("check","i sm")}</span>
+        </button>`).join("")}
+    </div>`;
+}
+
+function wizWhen(){
+  const taken = draft.date ? takenFor(draft.date) : new Set();
+  return `
+    <h2 style="font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:4px">Pick a day</h2>
+    <p class="ts" style="margin-bottom:12px">The clinic is closed on Fridays.</p>
+    <div class="days">
+      ${DAYS.map(d=>`
+        <button data-wiz="date" data-val="${d.iso}" aria-pressed="${draft.date===d.iso?"true":"false"}">
+          <div class="wd">${d.wd}</div><div class="dd">${d.dd}</div><div class="mo">${d.mo}</div>
+        </button>`).join("")}
+    </div>
+    ${draft.date ? `
+      <div class="sect">
+        <div class="sect-head"><h2>Pick a time</h2></div>
+        <p class="ts" style="margin:-6px 0 12px">${DAYS.find(d=>d.iso===draft.date).long} · greyed slots are taken</p>
+        <div class="times">
+          ${SLOTS.map(t=>`
+            <button data-wiz="time" data-val="${t}" aria-pressed="${draft.time===t?"true":"false"}" ${taken.has(t)?"disabled":""}>${t}</button>`).join("")}
+        </div>
+      </div>` : `
+      <div class="empty">
+        <span class="ic">${ic("cal","i lg")}</span>
+        <p class="ts">Choose a day to see the free slots.</p>
+      </div>`}`;
+}
+
+function wizConfirm(){
+  const svc = SERVICES.find(x=>x.id===draft.service);
+  const doc = DOCTORS.find(d=>d.id===draft.doctor);
+  const day = DAYS.find(d=>d.iso===draft.date);
+  return `
+    <h2 style="font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:14px">Check and confirm</h2>
+    <div class="card">
+      <div class="kv"><dt>Patient</dt><dd>${draft.patient || draft.newName}</dd></div>
+      ${draft.patient?"":`<div class="kv"><dt>Mobile</dt><dd class="tnum">${draft.newPhone}</dd></div>`}
+      <div class="kv"><dt>Service</dt><dd>${svc.n}</dd></div>
+      <div class="kv"><dt>Consultant</dt><dd>${doc.n}</dd></div>
+      <div class="kv"><dt>Day</dt><dd>${day.long}</dd></div>
+      <div class="kv"><dt>Time</dt><dd class="tnum">${draft.time}</dd></div>
+      <div class="kv"><dt>Duration</dt><dd class="tnum">${svc.min} min</dd></div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="row">
+        <div class="grow"><div class="eyebrow">Fee</div>
+          <div class="tnum" style="font-family:var(--display);font-weight:500;font-size:28px;margin-top:3px;color:var(--navy)">${money(svc.p)} EGP</div></div>
+        <span class="chip muted">Paid at the clinic</span>
+      </div>
+    </div>
+    <div class="field" style="margin-top:14px">
+      <label>Note for the consultant</label>
+      <textarea class="ctl" data-wiz-input="note" placeholder="Optional — anything the patient mentioned on the phone.">${draft.note}</textarea>
+    </div>
+    <div class="card mint">
+      <div class="row" style="align-items:flex-start">${ic("chat","i sm")}
+        <p style="font-size:12.5px;line-height:1.5;color:var(--ink-soft)">Confirmation goes out by WhatsApp saying only <b>Elite Clinic</b> and the time — never the service.</p></div>
+    </div>`;
+}
+
+/* ── Drawer ─────────────────────────────────────────────── */
+
+const DRAWER = [
+  { sep:"Clinic" },
+  { id:"schedule", icon:"cal",     t:"Day schedule",      s:"Tuesday 22 Sep" },
+  { id:"messages", icon:"chat",    t:"Messages",          s:"4 unread" },
+  { id:"payments", icon:"card",    t:"Payments",          s:"3,100 EGP outstanding" },
+  { id:"reports",  icon:"chart",   t:"Reports",           s:"September" },
+  { sep:"Setup" },
+  { id:"services", icon:"stetho",  t:"Services & prices", s:"6 active" },
+  { id:"staff",    icon:"users",   t:"Staff & rota",      s:"6 people" },
+  { id:"activity", icon:"bell",    t:"Activity log",      s:"" },
+  { id:"settings", icon:"cog",     t:"Settings",          s:"" },
+];
+
+function renderDrawer(){
+  drawer.innerHTML = `
+    <div class="me">
+      <span class="av lg" style="background:rgba(255,255,255,.16)">ND</span>
+      <div class="grow">
+        <div class="tt">Nada Ibrahim</div>
+        <div class="ts" style="color:rgba(255,255,255,.55)">Practice manager</div>
+      </div>
+      <button class="rnd" data-close-menu style="border-color:rgba(255,255,255,.22);background:transparent;color:#fff">${ic("x","i sm")}</button>
+    </div>
+    <nav>
+      ${DRAWER.map(d => d.sep
+        ? `<div class="sep">${d.sep}</div>`
+        : `<button data-go="${d.id}">
+             <span style="opacity:.8">${ic(d.icon)}</span>
+             <span class="grow"><span style="display:block">${d.t}</span>${d.s?`<span class="ts" style="color:rgba(255,255,255,.45)">${d.s}</span>`:""}</span>
+             ${ic("chev","i sm")}
+           </button>`).join("")}
+    </nav>
+    <button class="dsc" data-discreet>
+      <span style="opacity:.8">${ic("eye-off")}</span>
+      <span class="grow">
+        <span style="display:block;font-size:14.5px;font-weight:500">Discreet mode</span>
+        <span class="ts" style="color:rgba(255,255,255,.45)">Blur names and services</span>
+      </span>
+      <span class="sw ${discreet?"on":""}"><i></i></span>
+    </button>
+
+    <button class="out" data-go="login">${ic("logout","i sm")} Sign out</button>
+    <p class="note">Prototype · every name, result and price is invented</p>`;
+}
+
+/* ── Engine ─────────────────────────────────────────────── */
+
+const vp = document.getElementById("vp");
+const stackEl = document.getElementById("stack");
+const scrim = document.getElementById("scrim");
+const drawer = document.getElementById("drawer");
+const sheet = document.getElementById("sheet");
+const toastEl = document.getElementById("toast");
+
+let stack = [];      // screen ids, deepest last
+let busy = false;
+
+function build(id){
+  const { html, chrome } = SCREENS[id]();
+  const el = document.createElement("div");
+  el.className = "screen";
+  el.dataset.screen = id;
+  el.dataset.chrome = chrome;
+  el.innerHTML = html;
+  return el;
+}
+
+function setChrome(el){ vp.dataset.chrome = el.dataset.chrome || "light"; }
+
+/** Swap the top screen, animating `mode` in and the old one out. */
+function transition(id, mode){
+  if(busy) return;
+  const old = stackEl.lastElementChild;
+  const next = build(id);
+  stackEl.appendChild(next);
+  setChrome(next);
+
+  if(!old){ next.classList.add("fade-in"); return; }
+
+  busy = true;
+  const [inC, outC] = mode === "push" ? ["push-in","push-out"]
+                    : mode === "pop"  ? ["pop-in","pop-out"]
+                    : ["fade-in","fade-out"];
+  if(mode === "pop"){
+    // Popping: the OLD screen slides out to the right, over the one beneath.
+    stackEl.insertBefore(next, old);
+    next.classList.add("pop-in");
+    old.classList.add("pop-out");
+  } else {
+    next.classList.add(inC);
+    old.classList.add(outC);
+  }
+  const done = () => { old.remove(); busy = false; };
+  old.addEventListener("animationend", done, { once:true });
+  setTimeout(done, 520);
+}
+
+/* The busy guard lives here, NOT inside transition(). Checking it after the
+   stack has already been mutated leaves the two out of sync: the stack says
+   "newBooking", the screen still says "Bookings", and every later Back is
+   wrong. A fast double-tap is enough to trigger it. */
+
+function go(id, mode="push"){
+  if(busy || !SCREENS[id]) return;
+  stack.push(id);
+  transition(id, mode);
+}
+
+function back(){
+  if(busy) return;
+
+  /* The wizard owns Back while it is running: step 3 goes to step 2, not off
+     the screen entirely. */
+  const id = stack[stack.length - 1];
+  if(id === "newBooking" && draft && draft.step > 0 && draft.step < 4){
+    draft.step -= 1;
+    refresh();
+    return;
+  }
+
+  if(stack.length <= 1) return;
+  stack.pop();
+  transition(stack[stack.length-1], "pop");
+}
+
+/** Tabs reset the stack, so Back never unwinds through every tab visited. */
+function root(id){
+  if(busy) return;
+  stack = [id];
+  transition(id, "fade");
+}
+
+/** Re-render the screen in place, keeping scroll — used by the wizard. */
+function refresh(){
+  const cur = stackEl.lastElementChild;
+  const id = stack[stack.length-1];
+  const scroll = cur?.querySelector(".body")?.scrollTop || 0;
+  const next = build(id);
+  cur.replaceWith(next);
+  setChrome(next);
+  const b = next.querySelector(".body");
+  if(b) b.scrollTop = scroll;
+}
+
+/* Drawer + sheet */
+const openMenu  = () => { renderDrawer(); drawer.classList.add("on"); scrim.classList.add("on"); };
+const closeMenu = () => { drawer.classList.remove("on"); scrim.classList.remove("on"); };
+const closeSheet = () => { sheet.classList.remove("on"); scrim.classList.remove("on"); };
+
+let toastTimer;
+function toast(msg){
+  toastEl.innerHTML = `${ic("check","i sm")} <span>${msg}</span>`;
+  toastEl.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toastEl.classList.remove("on"), 2200);
+}
+
+/* ── One delegated listener for the whole device ─────────── */
+
+vp.addEventListener("click", e => {
+  const t = e.target;
+
+  if(t.closest("[data-back]"))       { back(); return; }
+  if(t.closest("[data-menu]"))       { openMenu(); return; }
+  if(t.closest("[data-close-menu]")) { closeMenu(); return; }
+  if(t === scrim)                    { closeMenu(); closeSheet(); return; }
+
+  if(t.closest("[data-discreet]")){
+    discreet = !discreet;
+    renderDrawer();
+    refresh();
+    toast(discreet ? "Discreet mode on" : "Discreet mode off");
+    return;
+  }
+
+  const reveal = t.closest("[data-reveal]");
+  if(reveal){ reveal.classList.toggle("shown"); return; }
+
+  const tab = t.closest("[data-tab]");
+  if(tab){ closeMenu(); root(tab.dataset.tab); return; }
+
+  const toggle = t.closest("[data-toggle]");
+  if(toggle){
+    const on = toggle.dataset.on !== "0";
+    toggle.dataset.on = on ? "0" : "1";
+    toggle.style.background = on ? "var(--line)" : "var(--mint)";
+    toggle.firstElementChild.style.left = on ? "3px" : "21px";
+    return;
+  }
+
+  /* Wizard controls come before the generic ones: a wizard button also
+     carries data-go in some places and must not double-fire. */
+  const wiz = t.closest("[data-wiz]");
+  if(wiz){ handleWiz(wiz); return; }
+
+  const pick = t.closest("[data-pick]");
+  if(pick){
+    pick.parentElement.querySelectorAll("[data-pick]").forEach(p=>{
+      p.setAttribute("aria-pressed","false");
+      p.style.borderColor=""; p.style.background="";
+    });
+    pick.setAttribute("aria-pressed","true");
+    pick.style.borderColor="var(--navy)"; pick.style.background="var(--navy-wash)";
+    return;
+  }
+
+  const seg = t.closest(".seg button");
+  if(seg){
+    seg.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed","false"));
+    seg.setAttribute("aria-pressed","true");
+    return;
+  }
+
+  const rootBtn = t.closest("[data-root]");
+  if(rootBtn){ closeMenu(); root(rootBtn.dataset.root); return; }
+
+  const toastBtn = t.closest("[data-toast]");
+  if(toastBtn){
+    toast(toastBtn.dataset.toast);
+    if(toastBtn.dataset.then) setTimeout(()=>root(toastBtn.dataset.then), 700);
+    return;
+  }
+
+  const goBtn = t.closest("[data-go]");
+  if(goBtn){
+    const id = goBtn.dataset.go;
+    closeMenu();
+    if(id === "newBooking") draft = freshDraft();
+    if(id === "login"){ stack = []; stackEl.innerHTML = ""; root("login"); return; }
+    go(id);
+  }
+});
+
+/* Wizard inputs write straight into the draft, so going back never loses
+   what was typed. */
+vp.addEventListener("input", e => {
+  const f = e.target.closest("[data-wiz-input]");
+  if(!f) return;
+  draft[f.dataset.wizInput] = f.value;
+  const cta = vp.querySelector('[data-wiz="next"]');
+  if(cta && draft.step === 0){
+    const ok = !!(draft.patient || (draft.newName.trim() && draft.newPhone.trim()));
+    cta.toggleAttribute("disabled", !ok);
+  }
+});
+
+function handleWiz(btn){
+  const a = btn.dataset.wiz;
+
+  if(a === "patient"){ draft.patient = draft.patient === btn.dataset.val ? null : btn.dataset.val; draft.newName=""; draft.newPhone=""; refresh(); return; }
+  if(a === "service"){ draft.service = btn.dataset.val; refresh(); return; }
+  if(a === "doctor") { draft.doctor  = btn.dataset.val; refresh(); return; }
+  if(a === "date")   { draft.date    = btn.dataset.val; draft.time = null; refresh(); return; }
+  if(a === "time")   { draft.time    = btn.dataset.val; refresh(); return; }
+
+  if(a === "next"){
+    draft.step = Math.min(4, draft.step + 1);
+    refresh();
+    const b = vp.querySelector(".body"); if(b) b.scrollTop = 0;
+    return;
+  }
+  if(a === "again"){ draft = freshDraft(); refresh(); return; }
+
+  /* `reset` carries data-root too, but data-wiz is matched first in the
+     delegated handler and returns — so this has to do the navigating itself,
+     or "Done" clears the draft and leaves you staring at the success screen. */
+  if(a === "reset"){ draft = null; root(btn.dataset.root || "bookings"); return; }
+}
+
+/* ── Fit the device to the window ───────────────────────── */
+
+/**
+ * The frame is a fixed 402×874. On any window shorter than about 950px — a
+ * laptop, a tablet, a browser that is not full screen — the bottom simply
+ * fell off the page, taking the tab bar with it.
+ *
+ * Scaling the whole frame keeps the phone's proportions, which shrinking the
+ * height in CSS would not. The negative margin reclaims the layout space the
+ * scaled-down element is no longer using: `transform` does not affect layout,
+ * so without it the page keeps reserving the full 874px and centres the phone
+ * against a column of empty air.
+ *
+ * Below 760px there is no frame at all — the app is the page — so this backs
+ * off entirely.
+ */
+const deviceEl = document.querySelector(".device");
+const phoneMQ = window.matchMedia("(max-width: 760px)");
+
+function fitDevice(){
+  if(phoneMQ.matches){
+    deviceEl.style.transform = "";
+    deviceEl.style.marginBottom = "";
+    return;
+  }
+  /* Measured, not guessed: the body's padding changes at the 900px
+     breakpoint, and a hard-coded gutter left the frame overhanging the
+     viewport by exactly the difference. */
+  const cs = getComputedStyle(document.body);
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+
+  const aside = document.querySelector(".aside");
+  const asideW = aside && getComputedStyle(aside).display !== "none"
+    ? aside.getBoundingClientRect().width + parseFloat(cs.columnGap || 0)
+    : 0;
+
+  const scale = Math.min(
+    1,
+    (window.innerHeight - padY - 8) / 874,
+    (window.innerWidth - padX - asideW - 8) / 402,
+  );
+  if(scale >= 0.999){
+    deviceEl.style.transform = "";
+    deviceEl.style.marginBottom = "";
+  } else {
+    deviceEl.style.transform = `scale(${scale})`;
+    deviceEl.style.marginBottom = `${-Math.round(874 * (1 - scale))}px`;
+  }
+}
+
+window.addEventListener("resize", fitDevice, { passive:true });
+phoneMQ.addEventListener("change", fitDevice);
+fitDevice();
+
+/* ── Boot ───────────────────────────────────────────────── */
+root("today");
+</script>
+</body>
+</html>
