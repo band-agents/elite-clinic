@@ -11,9 +11,11 @@
  * the hero names what is treated, and Elite Passage waits until the bottom,
  * where the minority it applies to will still find it.
  *
- * The identity is editorial rather than clinical. No heart traces, no pulse
- * rings, no floating stethoscopes: the men this place is for are avoiding
- * anything that looks like a hospital. What carries the page instead is
+ * The identity is editorial rather than clinical, and there are no
+ * photographs anywhere on the site. A clinic men come to precisely because
+ * they would rather not be seen is a strange place to put faces — type does
+ * the work, which is also more discreet and a good deal faster to load. No
+ * heart traces, no pulse rings, no stock stethoscopes either. What carries the page instead is
  * magazine furniture — oversized Fraunces display, hairline rules that draw
  * themselves in, index numerals in the margin, wide-tracked small caps, and
  * a contents strip under the hero.
@@ -41,7 +43,6 @@ import {
   CountUp, Drift, IndexNum, Kicker, LiveDot, RuleDraw, SplitText, WordMarquee,
 } from "@/components/editorial";
 import { ServiceExplorer } from "@/components/ServiceExplorer";
-import { Portrait } from "@/components/Portrait";
 import { Logo } from "@/components/Logo";
 
 export function Home() {
@@ -83,16 +84,20 @@ function Hero() {
         <div className="u-hero-field absolute inset-0" aria-hidden />
         <div className="u-scrim absolute inset-0" aria-hidden />
 
-        {/* The mint field the portrait stands in, running the full height of
-            the hero and off the right edge. The photograph's own background
-            was remapped to this exact colour, so the join between the image
-            and the panel is invisible — he reads as cut out without anyone
-            having to cut a white suit off a white page. */}
-        <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-mint lg:flex xl:w-[38%]">
-          <Portrait name="suit" priority className="w-[330px] max-w-[82%]" />
+        {/* The mint field carries the promise in display type. It held a
+            photograph of the consultant until now; a clinic men come to
+            precisely because they would rather not be seen is a strange place
+            to put a face, and the sentence says it harder than the picture
+            did. */}
+        <div className="absolute inset-y-0 right-0 hidden w-[42%] items-center bg-mint px-12 lg:flex xl:w-[38%]">
+          <p className="font-display text-[clamp(26px,2.6vw,38px)] leading-[1.18] text-white">
+            No waiting room.<br />
+            No shared corridor.<br />
+            No one asking what<br />you are here for.
+          </p>
         </div>
 
-        <div className="u-wrap relative z-10 grid items-end gap-10 pt-28 lg:min-h-[680px] lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-36">
+        <div className="u-wrap relative z-10 grid items-end gap-10 pt-28 lg:min-h-[620px] lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-36">
           <div className="pb-12 lg:pb-24">
             <Reveal>
               <Pill tone="light">
@@ -112,9 +117,9 @@ function Hero() {
               <div className="mt-8 flex max-w-xl items-start gap-5">
                 <RuleDraw tone="bg-white/25" className="mt-3 w-12 shrink-0" delay={0.4} />
                 <p className="text-[17px] leading-[1.8] text-white/75">
-                  The reason men delay care is rarely the medicine. It is the waiting room. So
-                  there isn&apos;t one — a private entrance, one patient in the clinic at a time,
-                  and {BRAND.doctor} for a full forty minutes.
+                  Men do not delay care because of the medicine. They delay it because of the
+                  waiting room &mdash; so there isn&apos;t one. A private entrance, one patient in
+                  the clinic at a time, and forty unhurried minutes with {BRAND.doctor}.
                 </p>
               </div>
             </Reveal>
@@ -130,9 +135,8 @@ function Hero() {
               </div>
             </Reveal>
 
-            {/* What the clinic actually treats, stated in the hero. The top of
-                the page should answer "is this for my problem?" before it
-                says anything about the brand. */}
+            {/* What is actually treated, in the hero. The top of the page has
+                to answer "is this for my problem?" before anything else. */}
             <Reveal delay={0.46}>
               <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2">
                 {["Erectile function", "Male fertility", "Testosterone", "Prostate & urology"].map((t) => (
@@ -145,15 +149,13 @@ function Hero() {
             </Reveal>
           </div>
 
-          {/* Below lg there is no mint field, so the portrait carries its own,
-              bled to the screen edges rather than sitting in a card. On lg it
-              is hidden and the copy of it inside the mint field takes over —
-              placing it there is what guarantees the photograph's own mint
-              rectangle can never straddle the navy/mint boundary and show its
-              edge. Same src, so the browser fetches it once. */}
-          <div className="u-bleed flex items-end justify-center bg-mint pt-10 lg:hidden">
-            <Portrait name="suit" priority className="w-[260px] sm:w-[300px]" />
-          </div>
+          {/* Below lg the mint field is not in the layout, so the promise gets
+              its own band, bled to the screen edges rather than boxed. */}
+          <Reveal className="u-bleed bg-mint px-7 py-11 lg:hidden">
+            <p className="font-display text-[clamp(24px,6.5vw,32px)] leading-[1.2] text-white">
+              No waiting room. No shared corridor. No one asking what you are here for.
+            </p>
+          </Reveal>
         </div>
       </section>
 
@@ -161,6 +163,7 @@ function Hero() {
     </>
   );
 }
+
 
 /** The contents strip — a magazine's front-of-book listing, on its own band
     so the hero above it can run its mint field edge to edge. */
@@ -448,19 +451,37 @@ function Consultant() {
           </Reveal>
         </div>
 
-        {/* Offset frame + drift: the magazine portrait treatment. */}
+        {/* A credentials card where the portrait used to be. The consultant's
+            name carries the section now, which is the honest version — his
+            record is the argument, not his photograph. */}
         <Reveal delay={0.08}>
-          <Drift amount={28} className="relative">
-            <div className="relative">
-              <Portrait name="coat" className="aspect-[300/430] w-full" />
+          <Drift amount={22}>
+            <div className="relative bg-brand p-9 text-white sm:p-11">
               <span className="pointer-events-none absolute -inset-4 border border-brand/20" aria-hidden />
-              <div className="absolute -bottom-6 -left-6 max-w-[200px] bg-brand p-5 text-white">
-                <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/45">
-                  Consultant
-                </p>
-                <p className="mt-1.5 font-display text-[20px] leading-tight">{BRAND.doctor}</p>
-                <p className="mt-1 text-[12px] text-white/55">Andrology & urology</p>
-              </div>
+              <Kicker tone="text-mint" rule="bg-mint/40">Your consultant</Kicker>
+              <p className="mt-6 font-display text-[clamp(28px,3.6vw,40px)] leading-[1.08]">
+                {BRAND.doctor}
+              </p>
+              <p className="mt-2 text-[14px] text-white/55">
+                Consultant andrologist &amp; urological surgeon
+              </p>
+
+              <ul className="mt-8 flex flex-col divide-y divide-white/12 border-t border-white/12">
+                {[
+                  ["~20", "years in men's health"],
+                  ["10,000+", "implant procedures"],
+                  ["1", "consultant, start to finish"],
+                ].map(([n, l]) => (
+                  <li key={l} className="flex items-baseline gap-4 py-4">
+                    <span className="u-tnum font-display text-[26px] leading-none text-mint">{n}</span>
+                    <span className="text-[14px] text-white/70">{l}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-6 text-[12px] leading-relaxed text-white/40">
+                Figures supplied by the clinic and not independently verified.
+              </p>
             </div>
           </Drift>
         </Reveal>

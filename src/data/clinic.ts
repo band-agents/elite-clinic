@@ -292,23 +292,23 @@ export function doctorsForService(serviceId: string): Doctor[] {
 
 export const PROMISES = [
   {
-    title: "Total privacy",
-    body: "A private entrance, a private waiting lounge, and one patient in the clinic at a time.",
+    title: "Nobody sees you",
+    body: "Your own entrance, your own lounge, and one patient in the building at a time.",
     icon: ShieldCheck,
   },
   {
-    title: "No waiting",
-    body: "Appointment-only. If your slot is 6:00, you are seen at 6:00 — we measure it.",
+    title: "Six means six",
+    body: "Appointment only. You are seen at your slot, not after it. We measure the wait.",
     icon: Activity,
   },
   {
-    title: "Everything on site",
-    body: "Ultrasound, laboratory and consultation share one floor. One visit, not three.",
+    title: "One visit, not three",
+    body: "Ultrasound, laboratory and consulting room share a floor. You leave with answers.",
     icon: Scan,
   },
   {
-    title: "The same consultant",
-    body: "Follow-ups stay with the doctor who saw you first, unless you ask otherwise.",
+    title: "One doctor, throughout",
+    body: "Follow-ups stay with the man who saw you first. You never repeat yourself.",
     icon: Stethoscope,
   },
 ] as const;
@@ -328,8 +328,8 @@ export const JOURNEY = [
   },
   {
     n: "03",
-    title: "See Dr. Osama, unhurried",
-    body: "Forty minutes, not ten. Tests are arranged the same visit where they are needed.",
+    title: "Forty minutes, not ten",
+    body: "Long enough to say the whole thing. Tests are done the same visit, not booked for a fortnight away.",
   },
   {
     n: "04",

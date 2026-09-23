@@ -20,7 +20,6 @@ import {
   Button, ButtonLink, Field, Input, Pill, Reveal, RevealGroup, RevealItem, Textarea,
 } from "@/components/ui";
 import { PageHead } from "@/components/PageHead";
-import { Shot } from "@/components/Shot";
 
 export function Contact() {
   return (
@@ -67,10 +66,6 @@ export function Contact() {
                 </RevealItem>
               ))}
             </RevealGroup>
-
-            <Reveal className="mt-4">
-              <Shot label="Clinic exterior — private entrance, evening, warm interior light" ratio="16/10" />
-            </Reveal>
 
             <Reveal className="mt-4">
               <div className="flex items-start gap-4 rounded-3xl border border-mint/25 bg-mint-wash p-6">

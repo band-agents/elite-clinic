@@ -29,7 +29,6 @@ import {
 } from "@/components/ui";
 import { Kicker, LiveDot, RuleDraw, SplitText, WordMarquee } from "@/components/editorial";
 import { Logo } from "@/components/Logo";
-import { Shot } from "@/components/Shot";
 
 export function International() {
   return (
@@ -162,11 +161,7 @@ function Included() {
         </div>
 
         <Reveal delay={0.1}>
-          <Shot
-            label="Arrivals hall — clinic coordinator meeting a patient, discreet"
-            ratio="4/5"
-          />
-          <div className="mt-4 rounded-3xl border border-line bg-white p-7">
+          <div className="rounded-3xl border border-line bg-white p-7">
             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-wash text-brand">
               <ShieldCheck size={19} />
             </span>

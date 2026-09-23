@@ -13,8 +13,7 @@ import { BRAND } from "@/lib/brand";
 import { DOCTORS, PROMISES } from "@/data/clinic";
 import { Avatar, ButtonLink, Pill, Reveal, RevealGroup, RevealItem } from "@/components/ui";
 import { PageHead } from "@/components/PageHead";
-import { Shot } from "@/components/Shot";
-import { Portrait } from "@/components/Portrait";
+import { Kicker } from "@/components/editorial";
 
 export function Doctor() {
   const lead = DOCTORS.find((d) => d.lead)!;
@@ -39,11 +38,39 @@ export function Doctor() {
 
       <section className="u-wrap pb-20">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          {/* No portrait. The record is the argument; a face on a men's
+              sexual-health page mostly serves the clinic, not the patient. */}
           <Reveal>
-            <Portrait name="suit" className="aspect-[296/504] w-full" />
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <Portrait name="coat" className="aspect-square" />
-              <Shot label="Detail — consulting room" ratio="1/1" tone="sand" />
+            <div className="bg-brand p-9 text-white sm:p-11">
+              <Kicker tone="text-mint" rule="bg-mint/40">The record</Kicker>
+              <ul className="mt-8 flex flex-col divide-y divide-white/12 border-t border-white/12">
+                {[
+                  ["~20", "years in men's health"],
+                  ["10,000+", "penile implant procedures"],
+                  ["1", "consultant, start to finish"],
+                  ["40", "minutes, every consultation"],
+                ].map(([n, l]) => (
+                  <li key={l} className="flex items-baseline gap-4 py-4">
+                    <span className="u-tnum font-display text-[28px] leading-none text-mint">{n}</span>
+                    <span className="text-[14.5px] text-white/70">{l}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-7 text-[12px] leading-relaxed text-white/40">
+                Supplied by the clinic and not independently verified. The source states both
+                eighteen and twenty years in different places.
+              </p>
+            </div>
+
+            <div className="mt-4 border border-line bg-sand p-8">
+              <Kicker>Known for</Kicker>
+              <p className="mt-5 font-display text-[22px] leading-[1.25] text-ink">
+                The Ghattas Modification
+              </p>
+              <p className="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+                His own refinement of hydraulic implant placement — a fixation suture that
+                shortens the operation and makes reservoir placement in the abdominal wall safer.
+              </p>
             </div>
           </Reveal>
 
