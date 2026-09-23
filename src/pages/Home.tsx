@@ -3,8 +3,13 @@
  *
  * Structure, in the order a stranger needs it:
  *   hero → the four doors → why this clinic → what we treat → proof
- *   → how a visit works → coming from abroad → the consultant → voices
- *   → journal → book or sign in
+ *   → how a visit works → the consultant → voices → journal
+ *   → coming from abroad → book or sign in
+ *
+ * Men's health leads and the Elite-branded programme closes. Almost everyone
+ * arriving is asking "is this for my problem?", not "what is this brand?" —
+ * the hero names what is treated, and Elite Passage waits until the bottom,
+ * where the minority it applies to will still find it.
  *
  * The identity is editorial rather than clinical. No heart traces, no pulse
  * rings, no floating stethoscopes: the men this place is for are avoiding
@@ -21,7 +26,7 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
-  ArrowRight, CalendarCheck, ChevronRight, Globe2, MessageCircle,
+  ArrowRight, CalendarCheck, ChevronRight, MessageCircle, UserRound,
   Quote, ShieldCheck, Stethoscope,
 } from "lucide-react";
 
@@ -48,10 +53,14 @@ export function Home() {
       <ServiceExplorer />
       <Numbers />
       <Journey />
-      <PassageStrip />
       <Consultant />
       <Voices />
       <JournalStrip />
+      {/* Elite Passage sits at the bottom on purpose. It is the premium,
+          Elite-branded programme and it applies to a minority of visitors —
+          leading with it made the page about the brand rather than about
+          men's health, which is what almost everyone arrives looking for. */}
+      <PassageStrip />
       <TwoDoors />
     </>
   );
@@ -110,6 +119,20 @@ function Hero() {
                   <MessageCircle size={17} /> Ask privately
                 </ButtonLink>
               </div>
+            </Reveal>
+
+            {/* What the clinic actually treats, stated in the hero. The top of
+                the page should answer "is this for my problem?" before it
+                says anything about the brand. */}
+            <Reveal delay={0.46}>
+              <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2">
+                {["Erectile function", "Male fertility", "Testosterone", "Prostate & urology"].map((t) => (
+                  <li key={t} className="flex items-center gap-2 text-[13.5px] text-white/60">
+                    <span className="h-1 w-1 rounded-full bg-mint" aria-hidden />
+                    {t}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
           </div>
 
@@ -174,10 +197,13 @@ function Hero() {
 
 /* ── Quick access ────────────────────────────────────────── */
 
+/* The four doors, all men's-health first. "Coming from abroad" used to sit
+   here in slot two; it moved down to the Elite Passage section, because the
+   top of the page belongs to what the clinic treats, not to the programme. */
 const QUICK = [
   { icon: CalendarCheck, title: "Book a visit", text: "Six services, real slots.", href: "/book" },
-  { icon: Globe2, title: "Coming from abroad", text: "Flights, visa, hotel, transfers.", href: "/international" },
   { icon: Stethoscope, title: "What we treat", text: "Andrology to hormonal health.", href: "/services" },
+  { icon: UserRound, title: "Meet Dr. Osama", text: "Your consultant, every visit.", href: "/doctor" },
   { icon: ShieldCheck, title: "Patient portal", text: "Results, scans, prescriptions.", href: "/portal" },
 ];
 
