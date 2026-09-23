@@ -78,13 +78,22 @@ const CONTENTS = [
 
 function Hero() {
   return (
-    <section className="u-grain relative overflow-hidden bg-brand-deep">
-      <div className="u-hero-field absolute inset-0" aria-hidden />
-      <div className="u-scrim absolute inset-0" aria-hidden />
+    <>
+      <section className="u-grain relative overflow-hidden bg-brand-deep">
+        <div className="u-hero-field absolute inset-0" aria-hidden />
+        <div className="u-scrim absolute inset-0" aria-hidden />
 
-      <div className="u-wrap relative z-10 pt-32 pb-0 lg:pt-40">
-        <div className="grid items-end gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="pb-4">
+        {/* The mint field the portrait stands in, running the full height of
+            the hero and off the right edge. The photograph's own background
+            was remapped to this exact colour, so the join between the image
+            and the panel is invisible — he reads as cut out without anyone
+            having to cut a white suit off a white page. */}
+        <div className="absolute inset-y-0 right-0 hidden w-[42%] items-end justify-center bg-mint lg:flex xl:w-[38%]">
+          <Portrait name="suit" priority className="w-[330px] max-w-[82%]" />
+        </div>
+
+        <div className="u-wrap relative z-10 grid items-end gap-10 pt-28 lg:min-h-[680px] lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-36">
+          <div className="pb-12 lg:pb-24">
             <Reveal>
               <Pill tone="light">
                 <LiveDot />
@@ -96,7 +105,7 @@ function Hero() {
               text="Men's health, handled privately."
               as="h1"
               delay={0.12}
-              className="mt-7 max-w-[15ch] text-[clamp(44px,8.6vw,104px)] text-white"
+              className="mt-7 max-w-[14ch] text-[clamp(46px,9vw,112px)] leading-[0.94] text-white"
             />
 
             <Reveal delay={0.3}>
@@ -136,64 +145,52 @@ function Hero() {
             </Reveal>
           </div>
 
-          {/* The cover portrait, offset and drifting — a spread, not a banner.
-              Shown on phones too: it is the first thing the clinic wants seen,
-              and hiding it below lg meant most visitors never did. */}
-          {/* Capped near the source's native 296px. The clinic's site only has
-              600×600 originals, and letting the column stretch it to ~450px
-              put it at 1.5x — visibly soft on a retina screen. A real shoot
-              is still owed. */}
-          <Reveal delay={0.2} className="mx-auto w-full max-w-[260px] sm:max-w-[300px] lg:mx-0 lg:ml-auto lg:max-w-[340px]">
-            <Drift amount={34}>
-              <div className="relative">
-                <Portrait name="suit" priority className="aspect-[296/504] w-full" />
-                <span
-                  className="pointer-events-none absolute -inset-3 border border-white/15"
-                  aria-hidden
-                />
-                <figcaption className="absolute -bottom-px left-0 right-0 bg-brand-deep/80 px-4 py-3 backdrop-blur-sm">
-                  <p className="font-display text-[17px] leading-tight text-white">
-                    {BRAND.doctor}
-                  </p>
-                  <p className="mt-0.5 text-[11.5px] text-white/55">
-                    Consultant andrologist &amp; urologist
-                  </p>
-                </figcaption>
-              </div>
-            </Drift>
-          </Reveal>
+          {/* Below lg there is no mint field, so the portrait carries its own,
+              bled to the screen edges rather than sitting in a card. On lg it
+              is hidden and the copy of it inside the mint field takes over —
+              placing it there is what guarantees the photograph's own mint
+              rectangle can never straddle the navy/mint boundary and show its
+              edge. Same src, so the browser fetches it once. */}
+          <div className="u-bleed flex items-end justify-center bg-mint pt-10 lg:hidden">
+            <Portrait name="suit" priority className="w-[260px] sm:w-[300px]" />
+          </div>
         </div>
+      </section>
 
-        {/* Contents strip. */}
-        <div className="mt-16 border-t border-white/12 lg:mt-20">
-          {/* The trailing arrow sits at `ml-auto`, so without a column gap it
-              lands hard against the next cell's index number. */}
-          <ul className="grid gap-x-10 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
-            {CONTENTS.map((c) => (
-              <li key={c.n}>
-                <Link
-                  href={c.href}
-                  className="group flex items-baseline gap-4 py-6 transition-colors"
-                >
-                  <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-mint">
-                    {c.n}
-                  </span>
-                  <span className="font-display text-[19px] text-white/80 transition-colors group-hover:text-white">
-                    {c.label}
-                  </span>
-                  <ArrowRight
-                    size={15}
-                    className="ml-auto self-center text-white/25 transition-all group-hover:translate-x-1 group-hover:text-white/70"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <Contents />
+    </>
+  );
+}
+
+/** The contents strip — a magazine's front-of-book listing, on its own band
+    so the hero above it can run its mint field edge to edge. */
+function Contents() {
+  return (
+    <section className="u-grain relative overflow-hidden bg-brand-deep">
+      <div className="u-wrap relative z-10">
+        <ul className="grid gap-x-10 divide-y divide-white/10 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
+          {CONTENTS.map((c) => (
+            <li key={c.n}>
+              <Link href={c.href} className="group flex items-baseline gap-4 py-6 transition-colors">
+                <span className="u-tnum text-[11px] font-semibold tracking-[0.2em] text-mint">
+                  {c.n}
+                </span>
+                <span className="font-display text-[19px] text-white/80 transition-colors group-hover:text-white">
+                  {c.label}
+                </span>
+                <ArrowRight
+                  size={15}
+                  className="ml-auto self-center text-white/25 transition-all group-hover:translate-x-1 group-hover:text-white/70"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
 }
+
 
 /* ── Quick access ────────────────────────────────────────── */
 
